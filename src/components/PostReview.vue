@@ -1,15 +1,28 @@
 <template>
   <div class="post-review">
+    <label>Leave comment</label>
     <textarea class="review-input" />
-    <star-rating/>
-    <button>Submit</button>
+    <star-rating @ratingChanged="updateRating"/>
+    <button type="submit">Submit</button>
   </div>
 </template>
 
 <script>
 import StarRating from './StarRating.vue';
+
 export default {
-  components: { StarRating },};
+  components: { StarRating },
+  data() {
+    return {
+      rating: 0
+    }
+  },
+  methods: {
+    updateRating(newRating) {
+      this.rating = newRating;
+    }
+  }
+  };
 </script>
 
 <style>
@@ -34,8 +47,6 @@ textarea.review-input {
   width: 60%;
   min-width: 300px;
   max-width: 500px;
-
-  height: 100px;
   padding: 7pt;
 
   resize: none;

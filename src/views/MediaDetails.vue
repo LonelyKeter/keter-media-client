@@ -1,60 +1,80 @@
 <template>
   <div class="media-details">
     <div class="media-header">
-      <h2>{{ mediaInfo.title }}</h2>
-      <h4>{{ mediaInfo.author.name }}</h4>
-      <h3>{{ mediaInfo.rating }}</h3>
+      <div>
+        <h2>{{ mediaInfo.title }}</h2>
+        <router-link
+          :to="{ name: 'User', params: { id: mediaInfo.author.id } }"
+        >
+          {{ mediaInfo.author.name }}
+        </router-link>
+        <h3>{{ mediaInfo.rating }}</h3>
+      </div>
     </div>
-    <div class="materials">
+    <table class="materials">     
+      <colgroup>
+        <col width = "20%"/>
+        <col width = "20%"/>
+        <col width = "5%"/>
+        <col width = "10%"/>
+        <col width = "auto"/>
+      </colgroup>   
       <material-item v-for="info in materials" :key="info.id" :info="info" />
-    </div>
-    <div>
+    </table>
+    <div class="review-section">
       <post-review />
+      <p>Reviews</p>
       <div class="reviews">
-        <review v-for="review in reviews" :key="review.id" :review="review"/>
+        <review v-for="review in reviews" :key="review.id" :review="review" />
       </div>
     </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { MaterialInfo, MediaInfo } from "@/model/media";
+import { defineComponent } from "@vue/runtime-core";
 import MaterialItem from "../components/MaterialItem.vue";
 import PostReview from "../components/PostReview.vue";
 import Review from "../components/Review.vue";
 
-export default {
-  components: { MaterialItem, PostReview, Review },
-  props: {
-    id: Number,
+const mediaInfo: MediaInfo = {
+  id: BigInt(1),
+  title: "Aaaa",
+  kind: "Video",
+  author: {
+    id: BigInt(1),
+    name: "Louis",
+    country: "UA",
   },
+  rating: 8.4,
+};
+
+const material1: MaterialInfo = {
+  id: BigInt(4),
+  format: ".jpeg",
+  quality: "High",
+  licenseName: "Free",
+  size: BigInt(12345),
+  downloadLink: "donwload.com/file1",
+};
+const material2: MaterialInfo = {
+  id: BigInt(5),
+  format: ".png",
+  quality: "Very high",
+  size: BigInt(54321),
+  licenseName: "Free",
+  downloadLink: "donwload.com/filedawdad2",
+};
+
+export default defineComponent({
+  components: { MaterialItem, PostReview, Review },
   data() {
     return {
-      mediaInfo: {
-        id: 1,
-        title: "Aaaa",
-        kind: "Video",
-        author: {
-          id: 1,
-          name: "Louis",
-          country: "UA",
-        },
-        rating: 8.4,
-      },
+      mediaInfo,
       materials: [
-        {
-          id: 4,
-          format: ".jpeg",
-          quality: "High",
-          licenseName: "Free",
-          downloadLink: "donwload.com/file1",
-        },
-        {
-          id: 5,
-          format: ".png",
-          quality: "Very high",
-          licenseName: "Free",
-          downloadLink: "donwload.com/file2",
-        },
+          material1,
+          material2
       ],
       reviews: [
         {
@@ -73,21 +93,25 @@ export default {
             name: "John",
           },
           rating: 9,
-          text: "Very cool",
+          text: "Very cool фцввввввввввввввввввввввввввввввввв",
         },
       ],
     };
   },
-};
+  methods: {
+      
+  }
+});
 </script>
 
 <style>
 div.media-details {
+  min-width: fit-content;
+  margin: auto;
+
   display: flex;
   flex-direction: column;
-  margin: auto 2%;
-
-  min-width: fit-content;
+  align-items: center;
 }
 
 div.media-details > div {
@@ -112,16 +136,18 @@ div.media-details > div {
   color: grey;
 }
 
-div.materials {
-  display: block;
+table.materials {
   margin: 2%;
 
-  border-color: greenyellow;
+  border-color: var(--green1);
   border-width: 2px;
   border-style: solid;
   border-radius: 10px;
+
+  min-width: 75%;
 }
 
 div.reviews {
+  justify-content: left;
 }
 </style>

@@ -1,10 +1,11 @@
 <template>
-  <div>
-    <div>{{info.format}}</div>
-    <div>{{info.quality}}</div>
-    <div>{{info.licenseName}}</div>
-    <div>{{info.downloadLink}}</div>
-  </div>
+  <tr class="material-item">
+    <td>{{info.format}}</td>
+    <td>{{info.quality}}</td>
+    <td>{{info.size}}</td>
+    <td>{{info.licenseName}}</td>
+    <td>{{info.downloadLink}}</td>
+  </tr>
 </template>
 
 <script>
@@ -14,6 +15,7 @@ export default {
       id: Number,
       format: String,
       quality: String,
+      size: Number,
       liсenseName: String,
       downloadLink: String
     }
@@ -21,13 +23,12 @@ export default {
 }
 </script>
 
-<style scoped>
-  div {
-    display: grid;
-    grid-template-columns: 10% 10% 10% 10%;
-    
+<style>
+  tr.material-item {    
     margin: 2px 10px;
-    padding: 3px;
+    padding: auto 5px;
+
+    gap: 1em;
 
     min-width: fit-content;
     font-size: smaller;

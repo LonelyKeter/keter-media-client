@@ -1,7 +1,7 @@
 <template>
   <div>
     <input :value="searchText" placeholder="Type title here..."/>
-    <button>
+    <button type="submit">
       Search
     </button>
   </div>

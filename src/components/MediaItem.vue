@@ -1,67 +1,76 @@
 <template>
-  <div>
-    <router-link :to="{name: 'MediaDetails', params: {id: info.id}}" class="media-title" >
-      {{info.title}}
-    </router-link>
-    <router-link class="media-author" :to="{name: 'AuthorSearch', params: {id: info.author.id}}">
-      {{info.author.name}}
-    </router-link>
-    <p class="media-kind">{{info.kind}}</p>
-    <p class="media-rating">{{info.rating}}</p>
-  </div>
+  <tr class="media-item">
+    <td>
+      <router-link
+        tag="li"
+        :to="{ name: 'MediaDetails', params: { id: info.id } }"
+        class="media-title"
+      >
+        {{ info.title }}
+      </router-link>
+    </td>
+    <td>
+      <router-link
+        class="media-author"
+        :to="{ name: 'User', params: { id: info.author.id } }"
+      >
+        {{ info.author.name }}
+      </router-link>
+    </td>
+    <td>
+      <p class="author-country">{{ info.author.country }}</p>
+    </td>
+    <td>
+      <p class="media-kind">{{ info.kind }}</p>
+    </td>
+    <td>
+      <p class="media-rating">{{ info.rating }}</p>
+    </td>
+  </tr>
 </template>
 
 <script>
 export default {
-  name: 'Media',
+  name: "Media",
 
-  props: {    
-    info: Object
+  props: {
+    info: Object,
   },
 
   data() {
-    return {
-    }
+    return {};
   },
 
-  setup() {
-    
-  },
-}
+  setup() {},
+};
 </script>
 
 <style scoped>
-  div {
-    display: grid;
-    grid-template-columns: 40% 40% 10% 10%;
-    
-    margin: 1%;
-    padding: auto;
-    max-width: 95%; 
-    vertical-align: middle;
-    
-    font-size:larger;
-  }
-  
-  div.media-item {
+td.media-item {
+  margin: auto;
+}
 
-  }
+tr.media-item td {
+  text-align: left;
+}
 
-  a {
-    margin: 5%;
-    text-decoration-line: none;
-    color: inherit;
-  }
+.media-item a:hover {
+    transform: scale(1.5);
+    text-decoration: underline;
+}
 
-  .media-title {
-    color: rgb(41, 32, 32);
-  }
+tr.media-item a {
+  margin: 5%;
+  text-decoration-line: none;
+  color: inherit;
+  text-anchor: middle;
+}
 
-  .media-author {
-    color: rgb(3, 29, 143);
-  }
+tr.media-item .media-author {
+  color: rgb(3, 29, 143);
+}
 
-  .media-kind {
-    color: orange;
-  }
+tr.media-item .media-kind {
+  color: orange;
+}
 </style>

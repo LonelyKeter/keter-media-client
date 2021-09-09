@@ -1,10 +1,12 @@
 <template>
   <div class="review">
     <div>
-    <p>{{review.userInfo.name}}</p>
-    <p>{{review.rating}}</p>
+      <h4>{{ review.userInfo.name }}</h4>
+      <p class="rating">{{ review.rating }}</p>
     </div>
-    <p>{{review.text}}</p>
+    <div class="review-text">
+      <p>{{ review.text }}</p>
+    </div>
   </div>
 </template>
 
@@ -15,32 +17,46 @@ export default {
       id: Number,
       userInfo: {
         id: Number,
-        name: String
+        name: String,
       },
       rating: Number,
-      text: String
-    }
-  }
-}
+      text: String,
+    },
+  },
+};
 </script>
 
 <style>
-  div.review {
-    margin: 10px;
-    padding: 5px;
+div.review {
+  margin: 10px;
+  padding: 5px;
 
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-
-    border-style: solid;
-    border-width: 1px;
-    border-color: rgba(128, 128, 128, 0.158);
-    border-radius: 10px;
-  }
-
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   
-  div.review > * {
-    font-size: small;
-  }
+  font-size: x-small;
+}
+
+div.review > div {
+  display: flex;
+  flex-direction: row;
+}
+
+div.review p {
+  margin: auto 10pt;
+}
+
+div.review p.rating {
+  color: orange;
+}
+
+div.review-text {
+  padding: 10px 0;
+
+  border: 1px solid rgba(128, 128, 128, 0.158);
+  border-radius:10px;  
+
+  width: 100%;
+}
 </style>
