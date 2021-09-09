@@ -22,6 +22,8 @@ import { defineComponent } from '@vue/runtime-core';
 import MediaItem from '../components/MediaItem.vue';
 import UserInfo from "../components/UserInfo.vue";
 
+import {UserInfo as UInfo} from '../model/userinfo';
+
 
 export default defineComponent({
   components: { UserInfo, MediaItem},
@@ -31,9 +33,9 @@ export default defineComponent({
   data() {
     return {
       userInfo: {
-        id: 1,
+        id: BigInt(1),
         name: "John",
-      },
+      } as UInfo,
       mediaInfos: [
         {
           id: 1,

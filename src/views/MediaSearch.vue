@@ -20,6 +20,7 @@ import MediaItem from "../components/MediaItem.vue";
 import MediaSearchBar from "../components/MediaSearchBar.vue";
 
 import Media from "../api/media";
+import { MediaInfo } from "@/model/media";
 
 export default defineComponent({
   components: {
@@ -30,28 +31,28 @@ export default defineComponent({
     return {
       mediaInfos: [
         {
-          id: 1,
+          id: BigInt(1),
           title: "Aadawdawdawdawdaa",
           kind: "Video",
           author: {
-            id: 1,
+            id: BigInt(1),
             name: "Louis",
             country: "UA",
           },
           rating: 8.4,
         },
         {
-          id: 2,
+          id: BigInt(2),
           title: "Aaaa",
           kind: "Video",
           author: {
-            id: 1,
+            id: BigInt(1),
             name: "Louis",
             country: "UA",
           },
           rating: 8.4,
         },
-      ],
+      ] as MediaInfo[],
     };
   },
   methods: {

@@ -38,7 +38,7 @@ class Auth {
 
         const responce = await Api.get('/auth/self')
             .bearerAuth(this._token)
-            .executeNoBody();
+            .execute();
 
         if (authNotSuccesful(responce)) {
             throw await apiError(
@@ -57,7 +57,7 @@ class Auth {
 
         const responce = await Api.get('/auth/privelegies')
             .bearerAuth(this._token)
-            .executeNoBody();
+            .execute();
 
         if (authNotSuccesful(responce)) {
             throw await apiError(

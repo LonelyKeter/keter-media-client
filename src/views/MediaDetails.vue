@@ -11,14 +11,14 @@
         <h3>{{ mediaInfo.rating }}</h3>
       </div>
     </div>
-    <table class="materials">     
+    <table class="materials">
       <colgroup>
-        <col width = "20%"/>
-        <col width = "20%"/>
-        <col width = "5%"/>
-        <col width = "10%"/>
-        <col width = "auto"/>
-      </colgroup>   
+        <col width="20%" />
+        <col width="20%" />
+        <col width="5%" />
+        <col width="10%" />
+        <col width="auto" />
+      </colgroup>
       <material-item v-for="info in materials" :key="info.id" :info="info" />
     </table>
     <div class="review-section">
@@ -37,6 +37,8 @@ import { defineComponent } from "@vue/runtime-core";
 import MaterialItem from "../components/MaterialItem.vue";
 import PostReview from "../components/PostReview.vue";
 import Review from "../components/Review.vue";
+
+import media from "../api/media";
 
 const mediaInfo: MediaInfo = {
   id: BigInt(1),
@@ -72,10 +74,7 @@ export default defineComponent({
   data() {
     return {
       mediaInfo,
-      materials: [
-          material1,
-          material2
-      ],
+      materials: [material1, material2],
       reviews: [
         {
           id: 5,
@@ -99,8 +98,10 @@ export default defineComponent({
     };
   },
   methods: {
-      
-  }
+    async loadMedia(id: bigint) {
+      this.mediaInfo = await media.getMedia(id);
+    },
+  },
 });
 </script>
 
