@@ -29,12 +29,19 @@
   </tr>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { UserInfo } from "@/model/userinfo";
+import { defineComponent, PropType } from "vue";
+import { MediaInfo, mediaKeyConstructor} from "../model/media";
+
+export default defineComponent({
   name: "Media",
 
   props: {
-    info: Object,
+    info: {
+        type: Object as PropType<MediaInfo>,
+        required: true
+    }
   },
 
   data() {
@@ -42,7 +49,7 @@ export default {
   },
 
   setup() {},
-};
+});
 </script>
 
 <style scoped>
@@ -55,8 +62,8 @@ tr.media-item td {
 }
 
 .media-item a:hover {
-    transform: scale(1.5);
-    text-decoration: underline;
+  transform: scale(1.5);
+  text-decoration: underline;
 }
 
 tr.media-item a {

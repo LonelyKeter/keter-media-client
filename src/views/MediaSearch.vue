@@ -9,7 +9,7 @@
         <col width = "10%"/>
       </colgroup>  
     <table class="wide">
-      <media-item v-for="info in mediaInfos" :key="info.id" :info="info" />
+      <media-item v-for="info in mediaInfos" :key="Number(info.id)" :info="info" />
     </table>
   </div>
 </template>
@@ -56,7 +56,7 @@ export default defineComponent({
     };
   },
   methods: {
-    async getMedia() {
+    async loadMedia() {
       try {
         this.mediaInfos = await Media.getMedia();
       } catch(e) {
@@ -65,7 +65,7 @@ export default defineComponent({
     }
   },
   created() {
-    this.getMedia()
+    this.loadMedia()
   }
 });
 </script>

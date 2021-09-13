@@ -32,13 +32,24 @@
 </template>
 
 <script lang="ts">
-import { MaterialInfo, MediaInfo } from "@/model/media";
+import { MaterialInfo, MediaInfo, MediaKey, toMediaKey } from "@/model/media";
 import { defineComponent } from "@vue/runtime-core";
 import MaterialItem from "../components/MaterialItem.vue";
 import PostReview from "../components/PostReview.vue";
 import Review from "../components/Review.vue";
 
 import media from "../api/media";
+import { RouteParams } from "vue-router";
+
+function extractId(params: RouteParams): MediaKey {
+    const id = params.id;
+
+    if (typeof id === 'string') {
+        return toMediaKey(id);
+    } else {
+        return toMediaKey(id[0]);
+    }
+}
 
 const mediaInfo: MediaInfo = {
   id: BigInt(1),
@@ -98,10 +109,19 @@ export default defineComponent({
     };
   },
   methods: {
-    async loadMedia(id: bigint) {
+    async loadMedia(id: MediaKey) {
       this.mediaInfo = await media.getMedia(id);
     },
+    async loadMaterials(mediaId: MediaKey) {
+      this.materials = await media.getMaterials(mediaId);
+    },
   },
+  created() {
+      const id = extractId(this.$router.currentRoute.value.params);
+
+      this.loadMedia(id)
+      this.loadMaterials(id);
+  }
 });
 </script>
 

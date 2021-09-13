@@ -1,32 +1,44 @@
 <template>
-  <div class="post-review">
+  <form class="post-review" @submit.prevent="submitReview()">
     <label>Leave comment</label>
-    <textarea class="review-input" />
-    <star-rating @ratingChanged="updateRating"/>
+    <textarea v-model="text" class="review-input"/>
+    <p>{{text}}</p>
+    <star-rating @ratingChanged="updateRating" />
     <button type="submit">Submit</button>
-  </div>
+  </form>
 </template>
 
-<script>
-import StarRating from './StarRating.vue';
+<script lang="ts">
+import { defineComponent } from "vue";
+import StarRating from "./StarRating.vue";
 
-export default {
+interface Data {
+  rating: number;
+  text?: string;
+}
+
+export default defineComponent({
   components: { StarRating },
   data() {
     return {
-      rating: 0
-    }
+      rating: 0 as number,
+      text: ''
+    } as Data;
   },
   methods: {
-    updateRating(newRating) {
+    updateRating(newRating: number) {
       this.rating = newRating;
-    }
-  }
-  };
+    },
+    async submitReview() {
+        console.log("Submitted");
+        console.log(this.text);
+    }   
+  },
+});
 </script>
 
 <style>
-div.post-review {
+form.post-review {
   width: fit-content;
 
   display: flex;

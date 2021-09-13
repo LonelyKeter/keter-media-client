@@ -28,7 +28,7 @@ export default defineComponent({
   },
   data() {
     return {
-        
+
     }
   },
   computed: {
@@ -84,6 +84,7 @@ body {
   font-weight: bold;
   color: #2c3e50;
   border: 0px;
+  text-decoration: none;
 }
 
 #nav a.router-link-exact-active {

@@ -1,6 +1,9 @@
-import { AuthorInfo } from "@/model/userinfo";
+import { AuthorInfo, UserInfo } from "@/model/userinfo";
 
 export type MediaKey = bigint;
+export const toMediaKey = (val: any) => BigInt(val);
+export const mediaKeyConstructor = BigInt; 
+ 
 export type MediaKind = "Video" | "Audio" | "Image";
 
 export interface MediaInfo {
@@ -22,4 +25,21 @@ export interface MaterialInfo {
     size: MaterialSize,
     licenseName: string,
     downloadLink: string,
+}
+
+export type ReviewRating = Number;
+export type ReviewKey = BigInt;
+
+export interface UserReview extends ReviewInfo{
+    userInfo: UserInfo,
+}
+
+export interface ReviewInfo extends Review{
+    id: ReviewKey,   
+    date: Date 
+}
+
+export interface Review {
+    rating: ReviewRating,
+    text?: String,
 }

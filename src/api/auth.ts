@@ -29,7 +29,7 @@ class Auth {
         } else {
             this._token = await this.extractAuthToken(responce);
         }
-    }
+    }    
 
     async getInfo(): Promise<UserInfo> {
         if (!this._token) {

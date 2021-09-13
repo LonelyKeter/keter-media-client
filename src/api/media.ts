@@ -31,7 +31,7 @@ class Media {
         return await res.json();
     }
 
-    async getMaterials(id: bigint): Promise<MaterialInfo> {
+    async getMaterials(id: bigint): Promise<MaterialInfo[]> {
         const res = await api.get("/media/" + id + "/materials")
             .execute();
 

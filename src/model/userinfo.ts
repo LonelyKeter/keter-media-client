@@ -1,5 +1,7 @@
+export type UserKey = bigint;
+
 export interface UserInfo {
-    id: bigint;
+    id: UserKey;
     name: string;
 }
 

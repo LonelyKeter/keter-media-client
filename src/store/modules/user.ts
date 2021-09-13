@@ -1,7 +1,5 @@
-import { UserInfo, UserPrivelegies } from "@/model/userinfo";
+import { UserInfo, UserKey, UserPrivelegies } from "@/model/userinfo";
 import { Module } from "vuex";
-import { createStore, useStore as baseUseStore, Store } from 'vuex'
-import { InjectionKey } from 'vue'
 
 export interface UserState {
     info: UserInfo | null;
@@ -22,5 +20,9 @@ export const user: Module<UserState, any> = {
         setUserPrivelegies(state, privs: UserPrivelegies) {
             state.privelegies = privs;
         }
+    },
+    getters: {
+        isCurrentUser: (state) => (id: UserKey) =>
+            state.info?.id === id,
     }
 };
