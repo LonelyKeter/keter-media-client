@@ -1,4 +1,4 @@
-export type UserKey = bigint;
+export type UserKey = number;
 
 export interface UserInfo {
     id: UserKey;
@@ -9,7 +9,7 @@ export interface AuthorInfo extends UserInfo {
     country: string
 }
 
-export interface UserPrivelegies {
+export interface UserPriveleges {
     author: boolean;
     moderator: boolean;
     admin: boolean;

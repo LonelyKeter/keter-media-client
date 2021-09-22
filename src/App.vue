@@ -14,13 +14,13 @@
         <profile-mini v-else :userInfo="userInfo"/>
       </div>
     </div>
-    <router-view/>
+    <router-view :key="$route.fullPath"/>
   </div>
 </template>
 
 <script lang="ts">
 import {defineComponent} from 'vue'; 
-import ProfileMini from './components/ProfileMini.vue'
+import ProfileMini from '@/components/users/ProfileMini.vue'
 
 export default defineComponent({
   components: {

@@ -1,46 +1,53 @@
 let host = window.location.origin + "/api";
 
+function createUrl(path: string) {
+    return host + path;
+}
+
 console.log(host);
+
+export const requestNotSuccessfull = (res: Readonly<AxiosResponse>) => 
+    res.status >= 400;
+
+export const extractQuerryError = async (res: AxiosResponse) =>
+    res.data as string;
 
 class Api {
     get(path: string) {
-        return new GetRequest(this.createUrl(path))
+        return new GetRequest(createUrl(path))
     }
 
     post(path: string) {
-        return new PostRequest(this.createUrl(path));
+        return new PostRequest(createUrl(path));
     }
 
-    private createUrl(path: string) {
-        return host + path;
+    put(path: string) {
+        return new PutRequest(createUrl(path));
     }
 
-    async throwQueryError(res: Response): Promise<never> {
-        throw apiError(res, this.extractQuerryError, "Login error");
+    async throwQueryError(res: AxiosResponse): Promise<never> {
+        throw apiError(res, extractQuerryError, "Login error");
     }
 
-    async extractQuerryError(res: Response): Promise<string> {
-        return await res.text() as string;
-    }
+    
 }
 
-type RequestMethod = "GET" | "POST";
 type ContentType = "application/json";
 
-
+import axios, {AxiosRequestConfig, AxiosResponse, Method} from 'axios'
 
 abstract class ApiRequest {
     private path: string;
-    private body: BodyInit | null = null;
-    private headers = new Headers();
-    protected abstract _method: RequestMethod;
+    private body: any | null = null;
+    private headers: Record<string, string> = {};
+    protected abstract _method: Method;
 
     constructor(path: string) {
         this.path = path;
     }
 
     protected setHeader(name: string, value: string) {
-        this.headers.append(name, value);
+        this.headers[name] = value;
         return this;
     }
 
@@ -57,14 +64,14 @@ abstract class ApiRequest {
         return this.setHeader("Content-Type", type);
     }
 
-    setBody(body: BodyInit) {
+    setBody(body: any) {
         this.body = body;
         return this;
     }
 
     json(body: object) {
         return this.setContentType("application/json")
-            .setBody(JSON.stringify(body));
+            .setBody(body);
     }
 
     bearerAuth(token: string) {
@@ -74,25 +81,23 @@ abstract class ApiRequest {
 
     async execute() {
         console.log(this);
-        let init: RequestInit = {
-            method: this._method,
-            headers: this.headers,
-        };
 
-        if (this.body) {
-            init.body = this.body;
+        let config: AxiosRequestConfig = {
+            url: this.path,
+            method: this._method,
+            headers: this.headers
         }
 
-        return await fetch(this.path, {
-            method: this._method,
-            body: this.body,
-            headers: this.headers,
-        });
+        if (this.body) {
+            config.data = this.body;
+        }
+
+        return await axios.request(config);
     }
 }
 
 class PostRequest extends ApiRequest {
-    _method = "POST" as RequestMethod;
+    _method = "POST" as Method;
 
     constructor(path: string) {
         super(path);
@@ -100,7 +105,15 @@ class PostRequest extends ApiRequest {
 }
 
 class GetRequest extends ApiRequest {
-    _method = "GET" as RequestMethod;
+    _method = "GET" as Method;
+
+    constructor(path: string) {
+        super(path);
+    }
+}
+
+class PutRequest extends ApiRequest {
+    _method = "PUT" as Method;
 
     constructor(path: string) {
         super(path);
@@ -109,7 +122,7 @@ class GetRequest extends ApiRequest {
 
 export default Object.freeze(new Api());
 
-export async function apiError(res: Response, ext: (res: Response) => Promise<string>, name: string): Promise<Error> {
+export async function apiError(res: AxiosResponse, ext: (res: AxiosResponse) => Promise<string>, name: string): Promise<Error> {
     const errMessage = await ext(res);
     const err = new Error(name);
     err.message = errMessage;

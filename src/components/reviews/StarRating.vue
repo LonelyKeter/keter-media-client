@@ -1,51 +1,53 @@
 <template>
   <div class="star-rating">    
     <input type="radio" name="stars" id="star-a" value="10" 
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 10)"/>
     <label for="star-a"></label>
 
     <input type="radio" name="stars" id="star-b" value="9"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 9)"/>
     <label for="star-b"></label>
 
     <input type="radio" name="stars" id="star-c" value="8" 
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 8)"/>
     <label for="star-c"></label>
 
     <input type="radio" name="stars" id="star-d" value="7"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 7)"/>
     <label for="star-d"></label>
 
     <input type="radio" name="stars" id="star-e" value="6"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 6)"/>
     <label for="star-e"></label>
 
     <input type="radio" name="stars" id="star-f" value="5"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 5)"/>
     <label for="star-f"></label>
 
     <input type="radio" name="stars" id="star-g" value="4"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 4)"/>
     <label for="star-g"></label>
 
     <input type="radio" name="stars" id="star-h" value="3"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 3)"/>
     <label for="star-h"></label>
 
     <input type="radio" name="stars" id="star-i" value="2"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 3)"/>
     <label for="star-i"></label>
 
     <input type="radio" name="stars" id="star-j" value="1"
-      @click="$emit('ratingChanged', $event.target.value)"/>
+      @click="$emit('ratingChanged', 1)"/>
     <label for="star-j"></label>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import  { defineComponent } from 'vue';
+
+export default defineComponent({
   emits: ['ratingChanged']
-};
+});
 </script>
 
 <style>

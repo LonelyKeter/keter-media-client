@@ -8,25 +8,25 @@ const routes : RouteRecordRaw[] = [{
   path: '/login',
   name: 'Login',
   component: () =>
-    import('../views/Login.vue')
+    import('../views/users/Login.vue')
 },
 {
   path: '/register',
   name: 'Register',
   component: () =>
-    import('../views/Register.vue')
+    import('../views/users/Register.vue')
 },
 {
-  path: '/media',
+  path: '/media', 
   name: 'MediaSearch',
   component: () =>
-    import('../views/MediaSearch.vue')
+    import('../views/media/MediaSearch.vue')
 },
 {
   path: '/media/:id',
   name: 'MediaDetails',
   component: () =>
-    import('../views/MediaDetails.vue'),
+    import('../views/media/MediaDetails.vue'),
 },
 {
   path: '/authors',
@@ -39,13 +39,19 @@ const routes : RouteRecordRaw[] = [{
   path: '/user/:id',
   name: 'User',
   component: () =>
-    import('../views/User.vue')
+    import('../views/users/User.vue')
 },
 {
-  path: '/profile',
-  name: 'Profile',
+  path: '/licenses/:key',
+  name: 'LicenseDetails',
   component: () => 
-    import('../views/Profile.vue')
+    import('../views/media/LicenseDetails.vue')
+},
+{
+  path: '/media/materials/:id',
+  name: 'DownloadMaterials',
+  component: () => 
+    import('../views/media/MaterialDetails.vue')
 }
 ]
 

@@ -1,18 +1,17 @@
 import { License } from "@/model/usage";
-import { UserInfo, UserKey } from "@/model/userinfo";
 import { AxiosResponse } from "axios";
 import api, {apiError, extractQuerryError, requestNotSuccessfull} from "./api";
 
-class Users {
-    async getUserInfo(id: UserKey) : Promise<UserInfo> {
-        const responce: AxiosResponse<UserInfo> = await api.get("/users/" + id)
+class Usage {
+    async getLicense(key: number | string) : Promise<License> {
+        const responce: AxiosResponse<License> = await api.get("/usage/licenses/" + key)
             .execute();
 
         if (requestNotSuccessfull(responce)) {
             throw apiError(
                 responce,
                 extractQuerryError,
-                "UsersApi error"                
+                "UsageApi error"                
             )
         } else {
             return responce.data; 
@@ -20,4 +19,4 @@ class Users {
     }
 }
 
-export default new Users();
+export default new Usage();

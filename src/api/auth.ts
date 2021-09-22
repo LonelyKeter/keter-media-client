@@ -1,5 +1,8 @@
 import Api, { apiError } from "@/api/api"
-import { UserInfo, UserPrivelegies} from "@/model/userinfo";
+import { UserInfo, UserPriveleges} from "@/model/userinfo";
+import { AxiosResponse } from "axios";
+
+export type AuthToken = string;
 
 function throwNoToken(): never {
     throw {
@@ -9,15 +12,13 @@ function throwNoToken(): never {
 }
 
 class Auth {
-    private _token: string | null = null;
-
-    async login(email: string, password: string) {
+    async login(email: string, password: string): Promise<AuthToken> {
         let loginData = {
             email,
             password
         };
 
-        const responce = await Api.post("/auth/login")
+        const responce: AxiosResponse<string> = await Api.post("/auth/login")
             .json(loginData)
             .execute();
 
@@ -27,17 +28,13 @@ class Auth {
                 this.extractErrData, 
                 "Login error");
         } else {
-            this._token = await this.extractAuthToken(responce);
+            return await this.extractAuthToken(responce);
         }
     }    
 
-    async getInfo(): Promise<UserInfo> {
-        if (!this._token) {
-            throwNoToken();
-        }
-
-        const responce = await Api.get('/auth/self')
-            .bearerAuth(this._token)
+    async getInfo(authToken: string): Promise<UserInfo> {
+        const responce: AxiosResponse<UserInfo> = await Api.get('/auth/self')
+            .bearerAuth(authToken)
             .execute();
 
         if (authNotSuccesful(responce)) {
@@ -46,17 +43,13 @@ class Auth {
                 this.extractErrData, 
                 "AuthApi error");
         } else {
-            return await responce.json();
+            return await responce.data;
         }
     }
 
-    async getPrivelegies() : Promise<UserPrivelegies> {        
-        if (!this._token) {
-            throwNoToken();
-        }
-
-        const responce = await Api.get('/auth/privelegies')
-            .bearerAuth(this._token)
+    async getPrivelegies(authToken: string) : Promise<UserPriveleges> { 
+        const responce: AxiosResponse<UserPriveleges> = await Api.get('/auth/privelegies')
+            .bearerAuth(authToken)
             .execute();
 
         if (authNotSuccesful(responce)) {
@@ -65,24 +58,20 @@ class Auth {
                 this.extractErrData, 
                 "AuthApi error");
         } else {
-            return await responce.json();
+            return await responce.data;
         }
     }
 
-    get token() {
-        return this._token;
+    private async extractAuthToken(responce: AxiosResponse) : Promise<AuthToken> {
+        return await responce.data;
     }
 
-    private async extractAuthToken(responce: Response) {
-        return await responce.text();
-    }
-
-    private async extractErrData(responce: Response) {
-        return await responce.text();
+    private async extractErrData(responce: AxiosResponse) {
+        return await responce.data;
     }
 }
 
-function authNotSuccesful(responce: Readonly<Response>) {
+function authNotSuccesful(responce: Readonly<AxiosResponse<any>>) {
     return responce.status >= 400;
 }
 

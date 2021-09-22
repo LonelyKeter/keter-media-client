@@ -30,9 +30,10 @@
 </template>
 
 <script lang="ts">
-import { UserInfo } from "@/model/userinfo";
 import { defineComponent, PropType } from "vue";
-import { MediaInfo, mediaKeyConstructor} from "../model/media";
+
+import { UserInfo } from "@/model/userinfo";
+import { MediaInfo, mediaKeyConstructor} from "@/model/media";
 
 export default defineComponent({
   name: "Media",
