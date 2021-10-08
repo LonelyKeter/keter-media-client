@@ -1,6 +1,9 @@
 <template>
   <div class="error-wraper">
     <h1>{{message}}</h1>
+    <slot>
+        
+    </slot>
   </div>
 </template>
 

@@ -13,7 +13,7 @@
       <media-item v-for="info in mediaInfos" :key="info.id" :info="info" />
     </table>
     <h1 v-else>No uploaded media</h1>
-    <reg-media v-if="isCurrentUser"/>
+    <reg-media v-if="isCurrentUser" />
   </div>
   <h1 v-else>Couldn't load user info</h1>
 </template>
@@ -28,8 +28,7 @@ import UserInfo from "@/components/users/UserInfo.vue";
 import { MediaInfo } from "@/model/media";
 import { UserInfo as UInfo, UserKey } from "@/model/userinfo";
 
-import users from "@/api/users";
-import media from "@/api/media";
+import { isApiSuccess, Media, Users } from "@/api";
 import RegMedia from "@/components/media/RegisterMedia.vue";
 
 interface Data {
@@ -48,7 +47,7 @@ function extractId(params: RouteParams): string {
 }
 
 export default defineComponent({
-  components: { UserInfo, MediaItem, RegMedia},
+  components: { UserInfo, MediaItem, RegMedia },
   data() {
     return {
       userInfo: null,
@@ -57,10 +56,18 @@ export default defineComponent({
   },
   methods: {
     async loadUserInfo(id: UserKey) {
-      this.userInfo = await users.getUserInfo(id);
+      const result = await Users.getUserInfo(id);
+
+      if (isApiSuccess(result)) {
+        this.userInfo = result;
+      }
     },
     async loadUserMedia(id: UserKey) {
-      this.mediaInfos = await media.getAuthorsMedia(id);
+      const result = await Media.getAuthorsMedia(id);
+
+      if (isApiSuccess(result)) {
+        this.mediaInfos = result;
+      }
     },
   },
   computed: {

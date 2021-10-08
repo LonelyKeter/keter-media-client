@@ -21,9 +21,9 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import { MediaItem, MediaSearchBar} from "@/components/media";
+import { MediaItem, MediaSearchBar } from "@/components/media";
 
-import Media from "@/api/media";
+import { Media, isApiSuccess } from "@/api";
 
 import { MediaInfo } from "@/model/media";
 
@@ -39,10 +39,10 @@ export default defineComponent({
   },
   methods: {
     async loadMedia() {
-      try {
-        this.mediaInfos = await Media.getMedia();
-      } catch (e) {
-        console.log(e);
+      const result = await Media.getMedia();
+
+      if (isApiSuccess(result)) {
+        this.mediaInfos = result;
       }
     },
   },

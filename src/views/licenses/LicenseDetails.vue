@@ -8,11 +8,10 @@
 import { defineComponent } from "vue";
 import { RouteParams } from "vue-router";
 
-import { LicenseComponent }  from "@/components/licenses";
+import { LicenseComponent } from "@/components/licenses";
 
 import { License } from "@/model/usage";
-
-import usage from "@/api/usage";
+import { isApiSuccess, Licenses } from "@/api";
 
 function extractKey(params: RouteParams): string {
   const key = params["key"];
@@ -32,20 +31,24 @@ export default defineComponent({
   components: { LicenseComponent },
   data() {
     return {
-        license: null
+      license: null,
     } as Data;
   },
   methods: {
-    async loadLicense(key: string) {
-        this.license = await usage.getLicense(key);
+    async loadLicenses(key: string) {
+      const result = await Licenses.getLicense(key);
+
+      if (isApiSuccess(result)) {
+        this.license = result;
+      }
     },
   },
 
   created() {
-      const key = extractKey(this.$router.currentRoute.value.params);
+    const key = extractKey(this.$router.currentRoute.value.params);
 
-      this.loadLicense(key);
-  }
+    this.loadLicenses(key);
+  },
 });
 </script>
 

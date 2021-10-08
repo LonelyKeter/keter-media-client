@@ -13,19 +13,12 @@
           <input type="text" ref="title" v-model="title" />
         </div>
         <p v-if="errors.title">{{ errors.title }}</p>
-        <div>
-          <label for="kind">Kind: </label>
-          <select ref="kind" v-model="kind">
-            <option disabled value="">Media kind</option>
-            <option
-              v-for="option in options"
-              :key="option.name"
-              :value="option.value"
-            >
-              {{ option.name }}
-            </option>
-          </select>
-        </div>
+        <select-list
+          :header="'Kind: '"
+          :options="options"
+          :default-item="'Select media kind'"
+          v-model="kind"
+        />
         <p v-if="errors.kind">{{ errors.kind }}</p>
         <div>
           <button type="submit">Register</button>
@@ -45,15 +38,17 @@ import {
   RegisterMedia,
   TitleError,
 } from "@/model/media";
+
 import { defineComponent } from "@vue/runtime-core";
+import SelectList from "@/components/SelectList.vue";
 
 interface Data {
   registering: boolean;
   title: string;
   kind: "" | MediaKind;
-  options: { name: string; value: MediaKind }[];
   tags: string[];
   defaultLicense?: string;
+  options: { name: string; value: MediaKind }[];
   errors: {
     title?: string;
     kind?: string;
@@ -61,6 +56,7 @@ interface Data {
 }
 
 export default defineComponent({
+  components: { SelectList },
   data() {
     return {
       registering: false,

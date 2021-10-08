@@ -12,6 +12,7 @@ import media from "@/api/media";
 import { Review, MediaKey, mediaKeyConstructor } from "@/model/media";
 import { defineComponent, PropType } from "vue";
 import StarRating from "@/components/reviews/StarRating.vue";
+import { isApiSuccess } from "@/api";
 
 interface Data {
   rating: number;
@@ -53,14 +54,16 @@ export default defineComponent({
 
       const token = this.$store.state.user.token;
 
-      if (!token) {
-        alert("No auth token error");
-        return;
-      } else {
-          console.log(review);
-          alert(JSON.stringify(review));
+      if (token) {
+        const result = await media.postReview(this.mediaId, review, token);
 
-        await media.postReview(this.mediaId, review, token);
+        if (isApiSuccess(result)) {
+
+        } else {
+            alert("Failed to post review")
+        }
+      } else {
+        alert("Auth required");
       }
     },
   },

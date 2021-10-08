@@ -2,33 +2,37 @@
   <tr class="material-item">
     <td>{{ info.format }}</td>
     <td>{{ info.quality }}</td>
-    <td>{{ info.size }}</td>
     <td>
-      <router-link :to="{name: 'LicenseDetails', params: {key: info.licenseName}}">
+      <router-link
+        :to="{ name: 'LicenseDetails', params: { key: info.licenseName } }"
+      >
         {{ info.licenseName }}
       </router-link>
     </td>
     <td>
-        <router-link :to="{name: 'DownloadMaterials', params: {id: info.id}}">
-            Download
-        </router-link>
+      <button
+        @click="
+          $router.push({ name: 'DownloadMaterials', params: { id: info.id } })
+        "
+      >
+        Download
+      </button>
     </td>
   </tr>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { defineComponent, PropType } from "@vue/runtime-core";
+import { MaterialInfo } from "@/model/media";
+
+export default defineComponent({
   props: {
     info: {
-      id: Number,
-      format: String,
-      quality: String,
-      size: Number,
-      liсenseName: String,
-      downloadLink: String,
+      type: Object as PropType<MaterialInfo>,
+      required: true,
     },
   },
-};
+});
 </script>
 
 <style>

@@ -12,5 +12,5 @@ export {
     MediaHeader,
     MediaItem,
     MediaSearchBar,
-    RegisterMedia
+    RegisterMedia,
 };

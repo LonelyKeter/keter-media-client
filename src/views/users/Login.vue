@@ -14,8 +14,8 @@
 
 <script lang="ts">
 import { Vue } from "vue-class-component";
-import auth from "@/api/auth";
 import { UserMutationTypes } from "@/store";
+import { isApiSuccess, Auth, Users  } from "@/api";
 
 export default class Login extends Vue {
   email = "";
@@ -24,21 +24,26 @@ export default class Login extends Vue {
   setup() {}
 
   async submit() {
-    try {
-      const token = await auth.login(this.email, this.password);
-      const info = await auth.getInfo(token);
-      const privelegies = await auth.getPrivelegies(token);
+    const token = await Auth.login(this.email, this.password);
 
+    if (isApiSuccess(token)) {
       this.$store.commit(UserMutationTypes.SET_AUTH_TOKEN, token);
-      this.$store.commit(UserMutationTypes.SET_USER_INFO, info);
-      this.$store.commit(UserMutationTypes.SET_USER_PRIVELEGES, privelegies);
+      //TODO: await all
+      const info = await Users.getSelf(token);
+      const privelegies = await Users.getSelfPrivelegies(token);
 
-      this.$router.go(-1);
-    } catch (err) {
-      const name = (err as Error).name;
-      const message = (err as Error).message;
-      alert(name + "\n" + message);
+      if (isApiSuccess(info)) {
+        this.$store.commit(UserMutationTypes.SET_USER_INFO, info);
+      }
+
+      if (isApiSuccess(privelegies)) {
+        this.$store.commit(UserMutationTypes.SET_USER_PRIVELEGES, privelegies);
+      }
+    } else {
+      alert("Login error");
     }
+
+    this.$router.go(-1);
   }
 }
 </script>

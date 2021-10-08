@@ -1,22 +1,28 @@
-import { License } from "@/model/usage";
-import { UserInfo, UserKey } from "@/model/userinfo";
-import { AxiosResponse } from "axios";
-import api, {apiError, extractQuerryError, requestNotSuccessfull} from "./api";
+import { Usage } from "@/model/usage";
+import { UserInfo, UserKey, UserPriveleges } from "@/model/userinfo";
+import api, {ApiResponse} from ".";
 
 class Users {
-    async getUserInfo(id: UserKey) : Promise<UserInfo> {
-        const responce: AxiosResponse<UserInfo> = await api.get("/users/" + id)
+    async getUserInfo(id: UserKey) : Promise<ApiResponse<UserInfo, null>> {
+        return await api.get("/users/" + id)
             .execute();
+    }
 
-        if (requestNotSuccessfull(responce)) {
-            throw apiError(
-                responce,
-                extractQuerryError,
-                "UsersApi error"                
-            )
-        } else {
-            return responce.data; 
-        }
+    async getSelf(authToken: string): Promise<ApiResponse<UserInfo, null>> {
+        return await api.get('/users/self')
+            .bearerAuth(authToken)
+            .execute();
+    }
+
+    async getSelfPrivelegies(authToken: string) : Promise<ApiResponse<UserPriveleges, null>> { 
+        return await api.get('/users/self/privelegies')
+            .bearerAuth(authToken)
+            .execute();
+    }   
+
+    async getUsages(userId: UserKey): Promise<ApiResponse<Usage[], null>> {
+        return await api.get("/users/" + userId + "/usages")
+            .execute();
     }
 }
 

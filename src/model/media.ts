@@ -2,8 +2,8 @@ import { AuthorInfo, UserInfo } from "@/model/userinfo";
 
 export type MediaKey = number;
 export const toMediaKey = (val: any) => Number(val);
-export const isMediaKey = (val: any) => typeof val === 'number'; 
-export const mediaKeyConstructor = BigInt; 
+export const isMediaKey = (val: any): val is MaterialKey => typeof val === 'number'; 
+export const mediaKeyConstructor = Number; 
  
 export type MediaKind = "Video" | "Audio" | "Image";
 
@@ -26,7 +26,6 @@ export interface MaterialInfo {
     mediaId: MediaKey,
     format: string,
     quality: Quality,
-    size: MaterialSize,
     licenseName: string,
 }
 

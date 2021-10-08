@@ -45,7 +45,7 @@ const routes : RouteRecordRaw[] = [{
   path: '/licenses/:key',
   name: 'LicenseDetails',
   component: () => 
-    import('../views/media/LicenseDetails.vue')
+    import('../views/licenses/LicenseDetails.vue')
 },
 {
   path: '/media/materials/:id',

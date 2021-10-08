@@ -11,7 +11,10 @@
       </colgroup>
       <material-item v-for="info in materials" :key="info.id" :info="info" />
     </table>
-    <add-material />
+    <add-material
+      v-if="$store.getters.isCurrentUser(mediaInfo.author.id)"
+      :mediaId="mediaInfo.id"
+    />
     <div class="review-section">
       <post-review :mediaId="mediaInfo?.id" v-if="$store.getters.loggedIn" />
       <p v-else>Login to rate and leave comment</p>
@@ -19,7 +22,7 @@
       <div class="reviews">
         <review
           v-for="review in reviews"
-          :key="Number(review.id)"
+          :key="review.id"
           :review="review"
         />
       </div>
@@ -41,7 +44,7 @@ import { RouteParams } from "vue-router";
 import { MaterialItem, AddMaterial, MediaHeader } from "@/components/media";
 import { PostReview, Review } from "@/components/reviews";
 
-import media from "@/api/media";
+import { Media, isApiSuccess } from "@/api";
 
 interface Data {
   mediaInfo: MediaInfo | null;
@@ -70,13 +73,25 @@ export default defineComponent({
   },
   methods: {
     async loadMedia(id: MediaKey) {
-      this.mediaInfo = await media.getMedia(id);
+      const result = await Media.getMedia(id);
+
+      if (isApiSuccess(result)) {
+        this.mediaInfo = result;
+      }
     },
     async loadMaterials(mediaId: MediaKey) {
-      this.materials = await media.getMaterials(mediaId);
+      const result = await Media.getMaterials(mediaId);
+
+      if (isApiSuccess(result)) {
+        this.materials = result;
+      }
     },
     async loadReviews(mediaId: MediaKey) {
-      this.reviews = await media.getReviews(mediaId);
+      const result = await Media.getReviews(mediaId);
+
+      if (isApiSuccess(result)) {
+        this.reviews = result;
+      }
     },
   },
   computed: {

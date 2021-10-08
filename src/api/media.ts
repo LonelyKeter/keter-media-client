@@ -1,116 +1,113 @@
-import api from "./api";
+import api, { ApiResponse, ApiError } from ".";
 import auth, { AuthToken } from "./auth";
 
-import { isMediaKey, MaterialInfo, MaterialKey, MediaInfo, MediaKey, RegisterMedia, Review, ReviewInfo, UserReview } from '@/model/media';
-import { AxiosResponse } from "axios";
+import { isMediaKey, MaterialInfo, MaterialKey, MediaInfo, MediaKey, Quality, RegisterMedia, Review, ReviewInfo, UserReview } from '@/model/media';
+import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserKey } from "@/model/userinfo";
+import { LicenseKey, UserUsage } from "@/model/usage";
 
 export interface Options {
     authorName: string
 }
 
 class Media {
-    async getMedia(options?: Options): Promise<MediaInfo[]>;
-    async getMedia(id: MediaKey): Promise<MediaInfo>;
+    async getMedia(options?: Options): Promise<ApiResponse<MediaInfo[], null>>;
+    async getMedia(id: MediaKey): Promise<ApiResponse<MediaInfo, null>>;
     async getMedia(options?: MediaKey | Options) {
         let path: string;
 
         if (!options) {
-            path = "/media";
+            return await api.get("/media")
+                .execute<MediaInfo[], null>();
         } else if (isMediaKey(options)) {
-            path = "/media/" + options;
+            return await api.get("/media/" + options)
+                .execute<MediaInfo, null>();
         } else {
-            path = "";
+            throw "Unimplimented media request";
         }
-
-        const res: AxiosResponse = await api.get(path)
-            .execute();
-
-        if (res.status >= 400) {
-            await api.throwQueryError(res);
-        }
-
-        return res.data;
     }
 
-    async getAuthorsMedia(id: UserKey): Promise<MediaInfo[]> {
-        const res: AxiosResponse<MediaInfo[]> = await api.get("/media?author_id=" + id)
+    async getAuthorsMedia(id: UserKey): Promise<ApiResponse<MediaInfo[], null>> {
+        return await api.get("/media?author_id=" + id)
             .execute();
-
-        if (res.status >= 400) {
-            await api.throwQueryError(res);
-        }
-
-        return res.data;
     }
 
-    async getMaterials(id: MediaKey): Promise<MaterialInfo[]> {
-        const res: AxiosResponse<MaterialInfo[]> = await api.get("/media/" + id + "/materials")
+    async getMaterials(id: MediaKey): Promise<ApiResponse<MaterialInfo[], null>> {
+        return await api.get("/media/" + id + "/materials")
             .execute();
-
-        if (res.status >= 400) {
-            await api.throwQueryError(res);
-        }
-
-        return res.data;
     }
 
-    async getMaterial(id: MaterialKey): Promise<MaterialInfo> {
-        const res: AxiosResponse<MaterialInfo> = await api.get("/media/materials/" + id)
+    async getMaterial(id: MaterialKey): Promise<ApiResponse<MaterialInfo, null>> {
+        return await api.get("/media/materials/" + id)
             .execute();
-
-        if (res.status >= 400) {
-            await api.throwQueryError(res);
-        }
-
-        return res.data;
     }
 
-    async isMaterialUsed(id: MaterialKey, token: AuthToken): Promise<boolean> {
-        const res: AxiosResponse<boolean> = await api.get("/media/materials/" + id + "?used")
+    async useMaterial(id: MaterialKey, token: AuthToken): Promise<ApiResponse<null, null>> {
+        return await api.post("/media/materials/" + id + "?use")
             .bearerAuth(token)
             .execute();
-
-        if (res.status >= 400) {
-            await api.throwQueryError(res);
-        }
-
-        return res.data;
     }
 
-    async getReviews(id: MediaKey): Promise<UserReview[]> {
-        const res = await api.get("/media/" + id + "/reviews")
+    async isMaterialUsed(id: MaterialKey, token: AuthToken): Promise<ApiResponse<boolean, null>> {
+        return await api.get("/media/materials/" + id + "?used")
+            .bearerAuth(token)
             .execute();
-
-        if (res.status >= 400) {
-            await api.throwQueryError(res);
-        }
-
-        return await res.data;
     }
 
-    async postReview(id: MediaKey, review: Review, authToken: string): Promise<void> {
-        const token = authToken;
+    async getReviews(id: MediaKey): Promise<ApiResponse<UserReview[], null>> {
+        return await api.get("/media/" + id + "/reviews")
+            .execute();
+    }
 
-        if (!token) {
-            throw {};
-        }
-
-        const res = await api.put("/media/" + id + "/reviews")
+    async postReview(id: MediaKey, review: Review, token: string): Promise<ApiResponse<null, null>> {
+        return await api.post("/media/" + id + "/reviews")
             .bearerAuth(token)
             .json(review)
             .execute();
-
-        if (res.status >= 400) {
-            await api.throwQueryError(res);
-        }
-
-        res.data;
     }
-/*
-    async regMedia(regMedia: RegisterMedia) : Promise<RegisterMediaResponce> {
 
-    }*/
+    async postMaterial(mediaId: MediaKey, payload: UploadMaterial, authToken: string): Promise<ApiResponse<null, string>> {
+        const data = new FormData();
+
+        data.append("file", payload.file);
+
+        return await api.post("/media/materials")
+                .bearerAuth(authToken)
+                .formData(data)
+                .setParams({
+                    media: mediaId,
+                    quality: payload.quality,
+                    format: payload.format,
+                    license: payload.license_id
+                })
+                .execute();
+    }
+
+    async deleteMaterial(materialId: MaterialKey, authToken: string): Promise<ApiResponse<null, null>> {
+        return await api.delete("/media/materials/" + materialId)
+            .execute();
+    }
+
+    async getMediaUsages(mediaId: MediaKey): Promise<ApiResponse<UserUsage[], null>> {
+        return await api.get("/media/" + mediaId + "/usages")
+            .execute();
+    }
+
+    async getMaterialUsages(materialId: MaterialKey): Promise<ApiResponse<UserUsage[], null>> {
+        return await api.get("/media/materials/" + materialId + "/usages")
+            .execute();
+    }
+    /*
+        async regMedia(regMedia: RegisterMedia) : Promise<RegisterMediaResponce> {
+    
+        }*/
 }
+
+export type UploadMaterial = {
+    quality: Quality;
+    file: File;
+    format: string,
+    license_id: LicenseKey
+};
 
 export default new Media();
