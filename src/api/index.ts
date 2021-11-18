@@ -4,23 +4,34 @@ function createUrl(path: string) {
     return host + path;
 }
 
+type NonUndefined<T> = T extends undefined ? never : T;
+
 export type ApiError<E> = {
     errorKind: "DB",
     payload: { message: string }
 } | {
-    errorKind: String,
-    payload: E
+    errorKind: "No responce data",
+} | {
+    errorKind: "General error responce",
+    error: {
+        code: number,
+        description: string,
+        reason: string
+    }
+} | {
+    errorKind: string,
+    payload: NonUndefined<E>
 } | undefined;
 
 export function isApiError<T, E>(response: ApiResponse<T, E>): response is ApiError<E> {
-    return (response === undefined || (typeof response === "object" && "errorKind" in response));
+    return (response === undefined || (response !== null && (typeof response === "object" && "errorKind" in response)));
 }
 
-export function isApiSuccess<T, E>(response: ApiResponse<T, E>): response is T {
+export function isApiSuccess<T, E>(response: ApiResponse<T, E>): response is NonUndefined<T> {
     return !isApiError(response);
 }
 
-export type ApiResponse<T, E> = T | ApiError<E>;
+export type ApiResponse<T, E> = NonUndefined<T> | ApiError<E>;
 
 class Api {
     get(path: string) {
@@ -37,6 +48,10 @@ class Api {
 
     delete(path: string) {
         return new DeleteRequest(createUrl(path));
+    }
+
+    get host() {
+        return host;
     }
 }
 
@@ -82,8 +97,10 @@ abstract class ApiRequest {
         return this.setHeader("Content-Type", type);
     }
 
-    public bearerAuth(token: string) {
-        this.setHeader("Authorization", "Bearer " + token);
+    public bearerAuth(token?: AuthToken) {
+        if (token) {
+            this.setHeader("Authorization", "Bearer " + token);
+        }
         return this;
     }
 
@@ -93,8 +110,6 @@ abstract class ApiRequest {
     }
 
     async execute<T, E>(): Promise<ApiResponse<T, E>> {
-        console.log(this);
-
         let config: AxiosRequestConfig = {
             url: this.path,
             method: this._method,
@@ -105,16 +120,28 @@ abstract class ApiRequest {
 
         try {
             const responce: AxiosResponse<T> = await axios.request(config);
-            console.log(responce.data);
-            return responce.data;
+            console.log({
+                path: this.path,
+                data: responce.data
+            });
+
+            return responce.data as NonUndefined<T>;
         } catch (error) {
             const err = error as AxiosError<ApiError<E>>;
             //TODO: Proper typechecks for api repsonce
-
-            let responce = err.response;
+            const responce = err.response;
+            
             if (responce) {
-                console.log(responce.data);
-                return responce.data;
+                const data = responce.data;
+                if (data && "error" in data) {
+                    data.errorKind = "General error responce"
+                }
+                console.log({
+                    path: this.path,
+                    data: responce.data
+                });                    
+
+                return data;
             } else {
                 console.log("No error data recieved");
                 return undefined;
@@ -178,7 +205,7 @@ class DeleteRequest extends ApiRequest {
 export default Object.freeze(new Api());
 
 import Media from "./media";
-import Auth from "./auth";
+import Auth, { AuthToken } from "./auth";
 import Licenses from "./licenses";
 import Users from "./users";
 

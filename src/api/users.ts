@@ -8,19 +8,19 @@ class Users {
             .execute();
     }
 
-    async getSelf(authToken: string): Promise<ApiResponse<UserInfo, null>> {
+    async loadSelf(authToken: string): Promise<ApiResponse<UserInfo, null>> {
         return await api.get('/users/self')
             .bearerAuth(authToken)
             .execute();
     }
 
-    async getSelfPrivelegies(authToken: string) : Promise<ApiResponse<UserPriveleges, null>> { 
-        return await api.get('/users/self/privelegies')
+    async loadSelfPrivelegies(authToken: string) : Promise<ApiResponse<UserPriveleges, null>> { 
+        return await api.get('/users/self/priveleges')
             .bearerAuth(authToken)
             .execute();
     }   
 
-    async getUsages(userId: UserKey): Promise<ApiResponse<Usage[], null>> {
+    async loadUsages(userId: UserKey): Promise<ApiResponse<Usage[], null>> {
         return await api.get("/users/" + userId + "/usages")
             .execute();
     }

@@ -42,6 +42,12 @@ const routes : RouteRecordRaw[] = [{
     import('../views/users/User.vue')
 },
 {
+  path: '/licenses',
+  name: 'LicenseList',
+  component: () => 
+    import('../views/licenses/LicenseList.vue')
+},
+{
   path: '/licenses/:key',
   name: 'LicenseDetails',
   component: () => 
@@ -49,7 +55,7 @@ const routes : RouteRecordRaw[] = [{
 },
 {
   path: '/media/materials/:id',
-  name: 'DownloadMaterials',
+  name: 'MaterialDetails',
   component: () => 
     import('../views/media/MaterialDetails.vue')
 }

@@ -1,5 +1,5 @@
 <template>
-  <button @click="clickAdd" :disabled="inProcess">Add material</button>
+  <button @click="clickAdd" v-show="!inProcess">Add material</button>
   <teleport to="body" v-if="inProcess">
     <form class="add-material-form" @submit.prevent="addMaterial">
       <input type="file" ref="file" />
@@ -31,7 +31,7 @@ import SelectList from "@/components/SelectList.vue";
 import { UploadMaterial } from "@/api/media";
 import { Media, Licenses, isApiSuccess } from "@/api";
 
-import { mediaKeyConstructor, Quality } from "@/model/media";
+import { MediaKeyConstructor, Quality } from "@/model/media";
 import { LicenseKey } from "@/model/usage";
 
 interface Data {
@@ -42,14 +42,17 @@ interface Data {
   licenseOptions: { name: string; value: LicenseKey }[];
 }
 
+type Event = "material-uploaded";
+
 export default defineComponent({
   components: { SelectList },
   props: {
     mediaId: {
-      type: mediaKeyConstructor,
+      type: MediaKeyConstructor,
       required: true,
     },
   },
+  emits: ["material-uploaded"],
   data(): Data {
     return {
       inProcess: false,
@@ -82,17 +85,32 @@ export default defineComponent({
         }));
       }
     },
+    getFileExtension(filename: string) {
+      return filename.slice(((filename.lastIndexOf(".") - 1) >>> 0) + 2);
+    },
     async addMaterial() {
+      if (!this.file) {
+        alert("Select file.");
+        return;
+      }
+
+      const extension = this.getFileExtension(this.file.name);
+
+      if (extension.length === 0) {
+        alert("Invalid file extension.");
+        return;
+      }
+
       const uploadMaterial: UploadMaterial = {
         quality: this.quality as Quality,
-        format: ".jpeg",
-        license_id: 1,
+        format: extension,
+        license_id: this.license,
         file: this.file,
       };
 
       const token = this.$store.state.user.token;
       if (token) {
-          const result = await Media.postMaterial(
+        const result = await Media.postMaterial(
           this.mediaId,
           uploadMaterial,
           token
@@ -100,7 +118,8 @@ export default defineComponent({
 
         if (isApiSuccess(result)) {
           this.inProcess = false;
-        } else {            
+          this.$emit("material-uploaded", { materialId: result });
+        } else {
           alert("Upload failed");
         }
       }

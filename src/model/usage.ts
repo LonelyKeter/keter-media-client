@@ -1,5 +1,5 @@
-import { MaterialKey } from "./media";
-import { UserInfo, UserKey } from "./userinfo";
+import { MaterialKey, Rating } from "./media";
+import { UserInfo } from "./userinfo";
 
 export type LicenseKey = number;
 
@@ -16,6 +16,7 @@ export interface License extends LicenseInfo {
 export interface Usage {
     materialId: MaterialKey,
     date: Date,
+    rating?: Rating,
     license: License
 }
 

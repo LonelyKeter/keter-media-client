@@ -2,7 +2,6 @@
   <div class="review">
     <div>
       <h4>{{ review.userInfo.name }}</h4>
-      <p class="rating">{{ review.rating }}</p>
     </div>
     <div class="review-text">
       <p>{{ review.text }}</p>

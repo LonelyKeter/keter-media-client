@@ -13,39 +13,51 @@
 </template>
 
 <script lang="ts">
-import { Vue } from "vue-class-component";
 import { UserMutationTypes } from "@/store";
-import { isApiSuccess, Auth, Users  } from "@/api";
+import { isApiSuccess, Auth, Users } from "@/api";
+import { defineComponent } from "@vue/runtime-core";
 
-export default class Login extends Vue {
-  email = "";
-  password = "";
-
-  setup() {}
-
-  async submit() {
-    const token = await Auth.login(this.email, this.password);
-
-    if (isApiSuccess(token)) {
-      this.$store.commit(UserMutationTypes.SET_AUTH_TOKEN, token);
-      //TODO: await all
-      const info = await Users.getSelf(token);
-      const privelegies = await Users.getSelfPrivelegies(token);
-
-      if (isApiSuccess(info)) {
-        this.$store.commit(UserMutationTypes.SET_USER_INFO, info);
-      }
-
-      if (isApiSuccess(privelegies)) {
-        this.$store.commit(UserMutationTypes.SET_USER_PRIVELEGES, privelegies);
-      }
-    } else {
-      alert("Login error");
-    }
-
-    this.$router.go(-1);
-  }
+interface Data {
+  email: string;
+  password: string;
 }
+
+export default defineComponent({
+  data(): Data {
+    return {
+      email: "",
+      password: "",
+    };
+  },
+  setup() {},
+  methods: {
+    async submit() {
+      const token = await Auth.login(this.email, this.password);
+
+      if (isApiSuccess(token)) {
+        this.$store.commit(UserMutationTypes.SET_AUTH_TOKEN, token);
+        //TODO: await all
+        const info = await Users.loadSelf(token);
+        const privelegies = await Users.loadSelfPrivelegies(token);
+
+        if (isApiSuccess(info)) {
+          this.$store.commit(UserMutationTypes.SET_USER_INFO, info);
+        }
+
+        if (isApiSuccess(privelegies)) {
+          this.$store.commit(
+            UserMutationTypes.SET_USER_PRIVELEGES,
+            privelegies
+          );
+        }
+
+        this.$router.go(-1);
+      } else {
+        alert("Login error");
+      }
+    },
+  },
+});
 </script>
 
 <style>

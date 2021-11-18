@@ -3,7 +3,17 @@ import { AuthorInfo, UserInfo } from "@/model/userinfo";
 export type MediaKey = number;
 export const toMediaKey = (val: any) => Number(val);
 export const isMediaKey = (val: any): val is MaterialKey => typeof val === 'number'; 
-export const mediaKeyConstructor = Number; 
+export const MediaKeyConstructor = Number; 
+
+export type Count = number;
+export const toCount = (val: any) => Number(val);
+export const isCount = (val: any): val is Count => typeof val === 'number'; 
+export const CountConstructor = Number; 
+
+export type Rating = number;
+export const toRating = (val: any) => Number(val);
+export const isRating = (val: any): val is Rating => typeof val === 'number'; 
+export const RatingConstructor = Number; 
  
 export type MediaKind = "Video" | "Audio" | "Image";
 
@@ -12,7 +22,8 @@ export interface MediaInfo {
     title: string,
     kind: MediaKind,
     author: AuthorInfo,
-    rating: number,
+    rating?: Rating,
+    use_count: Count
 }
 
 export type MaterialKey = number;
@@ -27,6 +38,9 @@ export interface MaterialInfo {
     format: string,
     quality: Quality,
     licenseName: string,
+    rating?: Rating,
+    use_count: Count,
+    isUsed: boolean | null
 }
 
 export type ReviewRating = number;
@@ -42,8 +56,7 @@ export interface ReviewInfo extends Review{
 }
 
 export interface Review {
-    rating: ReviewRating,
-    text?: String,
+    text: String,
 }
 
 export type RegisterMedia = {

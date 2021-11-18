@@ -1,30 +1,49 @@
 <template>
   <div class="media-details" v-if="mediaInfo">
     <media-header :mediaInfo="mediaInfo" />
-    <table class="materials">
+    <table class="materials" v-if="materialsDisplayed">
       <colgroup>
-        <col width="20%" />
-        <col width="20%" />
-        <col width="5%" />
+        <col width="auto" />
+        <col width="auto" />
+        <col width="10%" />
         <col width="10%" />
         <col width="auto" />
+        <col width="auto" />
       </colgroup>
+      <tr class="materials-header">
+        <th>Extension</th>
+        <th>Quality</th>
+        <th>Used</th>
+        <th>Rating</th>
+        <th>License</th>
+      </tr>
       <material-item v-for="info in materials" :key="info.id" :info="info" />
     </table>
-    <add-material
-      v-if="$store.getters.isCurrentUser(mediaInfo.author.id)"
-      :mediaId="mediaInfo.id"
-    />
+    <div v-else>
+        <h3>Author didn't upload any materials yet</h3>
+    </div>
+    <div v-if="isCurrentUser">
+      <add-material :mediaId="mediaInfo.id" @material-uploaded="onMaterialUploaded"/>
+      <div>
+        <p>Usages</p>
+        <table v-if="usages">
+          <usage-item
+            v-for="item in usages"
+            :key="String(item.usage.materialId) + ' ' + String(item.user.id)"
+            :usage="item.usage"
+            :userInfo="item.user"
+          />
+        </table>
+      </div>
+    </div>
     <div class="review-section">
-      <post-review :mediaId="mediaInfo?.id" v-if="$store.getters.loggedIn" />
-      <p v-else>Login to rate and leave comment</p>
+      <div v-if="!alreadyReviewed">
+        <post-review :mediaId="mediaInfo?.id" v-if="$store.getters.loggedIn" />
+        <p v-else>Login to rate and leave comment</p>
+      </div>
       <p>Reviews</p>
       <div class="reviews">
-        <review
-          v-for="review in reviews"
-          :key="review.id"
-          :review="review"
-        />
+        <review v-for="review in reviews" :key="review.id" :review="review" />
       </div>
     </div>
   </div>
@@ -33,6 +52,7 @@
 <script lang="ts">
 import {
   MaterialInfo,
+  MaterialKey,
   MediaInfo,
   MediaKey,
   toMediaKey,
@@ -45,11 +65,14 @@ import { MaterialItem, AddMaterial, MediaHeader } from "@/components/media";
 import { PostReview, Review } from "@/components/reviews";
 
 import { Media, isApiSuccess } from "@/api";
+import { UserUsage } from "@/model/usage";
+import UsageItem from "@/components/UsageItem.vue";
 
 interface Data {
   mediaInfo: MediaInfo | null;
   materials: MaterialInfo[] | null;
   reviews: UserReview[] | null;
+  usages: UserUsage[] | null;
 }
 
 function extractId(params: RouteParams): MediaKey {
@@ -63,13 +86,21 @@ function extractId(params: RouteParams): MediaKey {
 }
 
 export default defineComponent({
-  components: { MaterialItem, PostReview, Review, MediaHeader, AddMaterial },
-  data() {
+  components: {
+    MaterialItem,
+    PostReview,
+    Review,
+    MediaHeader,
+    AddMaterial,
+    UsageItem,
+  },
+  data(): Data {
     return {
       mediaInfo: null,
       materials: null,
       reviews: null,
-    } as Data;
+      usages: null,
+    };
   },
   methods: {
     async loadMedia(id: MediaKey) {
@@ -80,7 +111,7 @@ export default defineComponent({
       }
     },
     async loadMaterials(mediaId: MediaKey) {
-      const result = await Media.getMaterials(mediaId);
+      const result = await Media.getMaterials(mediaId, this.$store.state.user.token);
 
       if (isApiSuccess(result)) {
         this.materials = result;
@@ -93,18 +124,48 @@ export default defineComponent({
         this.reviews = result;
       }
     },
+    async loadUsages(mediaId: MediaKey) {
+      const result = await Media.getMediaUsages(mediaId);
+
+      if (isApiSuccess(result)) {
+        this.usages = result;
+      }
+    },
+    async onMaterialUploaded({ materialId } : { materialId: MaterialKey }) {
+        const token = this.$store.state.user.token;
+
+        const result = await Media.getMaterial(materialId, token);
+        if (isApiSuccess(result)) {
+            this.materials?.push(result);
+        }        
+    }    
   },
   computed: {
-    loggedIn() {
-      !!this.$store.state.user.info;
+    loggedIn(): boolean {
+      return !!this.$store.state.user.info;
     },
+    isCurrentUser(): boolean {
+      const info = this.mediaInfo;
+      if (info) {
+        return this.$store.getters.isCurrentUser(info.author.id);
+      } else {
+        return false;
+      }
+    },
+    materialsDisplayed(): boolean {
+        return (this.materials !== null && this.materials.length > 0);
+    },
+    alreadyReviewed(): boolean {
+        return (!!this.reviews?.find(review => this.$store.getters.isCurrentUser(review.userInfo.id)));
+    }
   },
   created() {
     const id = extractId(this.$router.currentRoute.value.params);
 
     this.loadMedia(id);
     this.loadMaterials(id);
-    this.loadReviews(id);
+    this.loadUsages(id);
+    this.loadReviews(id);    
   },
 });
 </script>
@@ -133,6 +194,14 @@ table.materials {
   border-radius: 10px;
 
   min-width: 75%;
+}
+
+table.materials > tr.materials-header {
+  border-width: 0 0 2px 0;
+}
+
+div.review-section {
+  min-width: 50%;
 }
 
 div.reviews {

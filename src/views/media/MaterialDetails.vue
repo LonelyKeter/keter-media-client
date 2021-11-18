@@ -9,8 +9,8 @@
     <div class="license-details-wrapper">
       <license-component v-if="license" :license="license" />
     </div>
-    <div v-if="alreadyUsed !== null">
-      <div v-if="!alreadyUsed">
+    <div>
+      <div v-if="!usage">
         <div>
           <input name="agreed" type="checkbox" v-model="agreed" />
           <label for="agreed">
@@ -22,27 +22,34 @@
         </div>
       </div>
       <div v-else>
-        <p>You already use this material</p>
+        <table>
+          <usage-item :usage="usage" :downloadEnabled="true" />
+        </table>
       </div>
     </div>
   </div>
-  <error v-else :message="'Couldn\'t load material info'">
-
-  </error>
+  <error v-else :message="'Couldn\'t load material info'"> </error>
 </template>
 
 <script lang="ts">
 import { defineComponent } from "vue";
 import { RouteParams } from "vue-router";
 
-import { Licenses, Media, isApiSuccess }  from "@/api";
+import { Licenses, Media, isApiSuccess } from "@/api";
 
-import { MaterialInfo, MaterialKey, MediaInfo, MediaKey } from "@/model/media";
-import { License } from "@/model/usage";
+import {
+  MaterialInfo,
+  MaterialKey,
+  MediaInfo,
+  MediaKey,
+  MediaKeyConstructor,
+} from "@/model/media";
+import { License, Usage } from "@/model/usage";
 
 import Error from "@/components/Error.vue";
 import { LicenseComponent } from "@/components/licenses";
 import { MediaHeader } from "@/components/media";
+import UsageItem from "@/components/UsageItem.vue";
 
 function extractId(params: RouteParams): string {
   const param = params["id"];
@@ -59,18 +66,18 @@ interface Data {
   media: MediaInfo | null;
   license: License | null;
   agreed: boolean;
-  alreadyUsed: boolean | null;
+  usage: Usage | null;
 }
 
 export default defineComponent({
-  components: { LicenseComponent, MediaHeader, Error },
+  components: { LicenseComponent, MediaHeader, Error, UsageItem },
   data() {
     return {
       material: null,
       media: null,
       license: null,
       agreed: false,
-      alreadyUsed: null,
+      usage: null,
     } as Data;
   },
   created() {
@@ -86,40 +93,58 @@ export default defineComponent({
       this.loadIsUsed(id);
     },
     async loadMaterial(id: MaterialKey) {
-        const result = await Media.getMaterial(id);
+      const result = await Media.getMaterial(id);
 
-        if (isApiSuccess(result)) {
-            this.material = result;
-        }
+      if (isApiSuccess(result)) {
+        this.material = result;
+      }
     },
     async loadLicense(name: string) {
-        const result = await Licenses.getLicense(name);
+      const result = await Licenses.getLicense(name);
 
-        if (isApiSuccess(result)) {
-            this.license = result;
-        }
+      if (isApiSuccess(result)) {
+        this.license = result;
+      }
     },
     async loadMedia(id: MediaKey) {
-        const result = await Media.getMedia(id);
+      const result = await Media.getMedia(id);
 
-        if (isApiSuccess(result)) {
-            this.media = result;
-        }
+      if (isApiSuccess(result)) {
+        this.media = result;
+      }
     },
     async loadIsUsed(id: MediaKey) {
+      const userId = this.$store.state.user.info?.id;
+
+      if (userId) {
+        const result = await Media.getMaterialUsageUserId(id, userId);
+
+        if (isApiSuccess(result)) {
+          this.usage = result;
+        }
+      } else {
+        this.usage = null;
+      }
+    },
+    async aquire() {
       const token = this.$store.state.user.token;
 
       if (token) {
-        const result = await Media.isMaterialUsed(id, token);
-        
+        const result = await Media.useMaterial(
+          this.material?.id as number,
+          token
+        );
+
         if (isApiSuccess(result)) {
-            this.alreadyUsed = result;
+          alert("Material aquired successfully");
+          this.$router.go(-1);
+        } else {
+          alert("Error occured while obtaining material");
         }
       } else {
-        this.alreadyUsed = null;
+        this.$router.push({ name: "Login" });
       }
     },
-    async aquire() {},
   },
   computed: {
     hasAgreed(): boolean {

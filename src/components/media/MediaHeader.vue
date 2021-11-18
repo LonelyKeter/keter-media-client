@@ -7,7 +7,7 @@
         >
           {{ mediaInfo.author.name }}
         </router-link>
-        <h3>{{ mediaInfo.rating }}</h3>
+        <h3>Rating: {{ roundedRating }}<br/>Used: {{ mediaInfo.use_count }}</h3>
       </div>
     </div>
 </template>
@@ -20,6 +20,11 @@ export default defineComponent({
         mediaInfo: {
             type: Object as PropType<MediaInfo>,
             required: true
+        }
+    },
+    computed: {
+        roundedRating(): string {
+            return this.mediaInfo.rating?.toPrecision(4) ?? ""
         }
     }
 });

@@ -1,15 +1,14 @@
 <template>
   <div>    
     <div id="bar">
-      <div>
-      </div>
       <div id="nav">
-        <router-link to="/media">Media</router-link> |   
+        <router-link to="/media">Media</router-link>  | 
+        <router-link to="/licenses">Licenses</router-link>
       </div>    
       <div id="corner">
         <div v-if="!userInfo">
-          <router-link to="/login">Log in</router-link> |
-          <router-link to="/register">Sign up</router-link> |
+          <router-link to="/login">Log in</router-link>  |
+          <router-link to="/register">Sign up</router-link>
         </div>
         <profile-mini v-else :userInfo="userInfo"/>
       </div>
@@ -68,16 +67,18 @@ body {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  align-content: center;
 
   background: var(--green1);
 }
 
 #bar a {  
   text-decoration: none;
+  justify-content: space-between;
 }
 
-#nav {
-  justify-self: flex-start;
+#bar a:hover{
+    transform: scale(1,1);
 }
 
 #nav a {
@@ -94,6 +95,7 @@ body {
 #corner {
   float: right;
   background-color: inherit;
+  justify-self: right;
 }
 
 input {  
@@ -155,5 +157,14 @@ table.small {
 
 .dropdown-menu:hover > .dropdown-content {
   display: block;
+}
+
+.warning1 {
+    color: green
+}
+
+body {
+    background: rgba(255, 255, 92, 0.281);
+    min-width: fit-content;
 }
 </style>

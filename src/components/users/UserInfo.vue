@@ -4,15 +4,18 @@
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import { UserInfo } from "@/model/userinfo";
+import { defineComponent, PropType } from "@vue/runtime-core"
+
+export default defineComponent({
   props: {
     info: {
-      id: Number,
-      name: String
+        type: Object as PropType<UserInfo>,
+        required: true
     }
   },
-}
+});
 </script>
 
 <style>

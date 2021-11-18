@@ -2,57 +2,38 @@
   <form class="post-review" @submit.prevent="submitReview()">
     <label>Leave comment</label>
     <textarea v-model="text" class="review-input" />
-    <star-rating @ratingChanged="updateRating" />
-    <button type="submit">Submit</button>
+    <button type="submit" :disabled="text === ''">Submit</button>
   </form>
 </template>
 
 <script lang="ts">
 import media from "@/api/media";
-import { Review, MediaKey, mediaKeyConstructor } from "@/model/media";
-import { defineComponent, PropType } from "vue";
-import StarRating from "@/components/reviews/StarRating.vue";
+import { Review, MediaKeyConstructor } from "@/model/media";
+import { defineComponent } from "vue";
 import { isApiSuccess } from "@/api";
 
 interface Data {
-  rating: number;
-  text?: string;
+  text: string;
 }
 
 export default defineComponent({
-  components: { StarRating },
   props: {
     mediaId: {
-      type: Object as PropType<MediaKey>,
+      type: MediaKeyConstructor,
       required: true,
     },
   },
   data() {
     return {
-      rating: 0 as number,
-      text: undefined,
+      text: "",
     } as Data;
   },
   methods: {
-    updateRating(newRating: number) {
-      this.rating = newRating;
-    },
-
     async submitReview() {
-      if (this.rating === 0) {
-        alert("Rate product to submit");
-        return;
-      }
-
-      let review = {
-        rating: this.rating,
-      } as Review;
-
-      if (this.text != undefined && this.text.length > 0) {
-        review.text = this.text;
-      }
-
       const token = this.$store.state.user.token;
+      const review: Review = {
+          text: this.text
+      };
 
       if (token) {
         const result = await media.postReview(this.mediaId, review, token);
@@ -72,26 +53,22 @@ export default defineComponent({
 
 <style>
 form.post-review {
-  width: fit-content;
-
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
 }
 
 .post-review > * {
-  float: right;
+  margin: 3pt 0;
 }
 
 .post-review > button {
   margin: 0;
   width: fit-content;
+  align-self: end;
 }
 
 textarea.review-input {
-  width: 60%;
   min-width: 300px;
-  max-width: 500px;
   padding: 7pt;
 
   resize: none;

@@ -31,9 +31,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType } from "vue";
-
-import { UserInfo } from "@/model/userinfo";
-import { MediaInfo, mediaKeyConstructor} from "@/model/media";
+import { MediaInfo} from "@/model/media";
 
 export default defineComponent({
   name: "Media",
@@ -50,6 +48,12 @@ export default defineComponent({
   },
 
   setup() {},
+
+  computed: {
+      roundedRating(): string {
+          return this.info.rating?.toPrecision(4) ?? "";
+      }
+  }
 });
 </script>
 

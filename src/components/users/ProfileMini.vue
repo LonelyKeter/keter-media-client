@@ -1,10 +1,14 @@
 <template>
   <div class="profile-mini">
     <div class="dropdown-menu">
-      <router-link :to="{ name: 'User', params: { id: userInfo.id } }">{{
-        userInfo.name
-      }}</router-link>
-      <div class="dropdown-content" @click="logOut()">Log out</div>
+      <div class="dropdown-header">
+        <router-link :to="{ name: 'User', params: { id: userInfo.id } }">{{
+          userInfo.name
+        }}</router-link>
+      </div>
+      <div class="dropdown-content">
+        <a @click="logOut()"> Log out </a>
+      </div>
     </div>
   </div>
 </template>
@@ -17,10 +21,10 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 export default defineComponent({
   name: "ProfileMini",
   props: {
-    userInfo: { 
-        type: Object as PropType<UserInfo>,
-        required: true
-    }
+    userInfo: {
+      type: Object as PropType<UserInfo>,
+      required: true,
+    },
   },
   methods: {
     logOut() {
@@ -31,7 +35,23 @@ export default defineComponent({
 </script>
 
 <style>
+.profile-mini a {
+}
+
 .profile-mini .dropdown-menu {
   background-color: var(--green1);
+}
+
+.profile-mini .dropdown-content {
+  background: rgba(0, 128, 0, 0.281);
+}
+
+.profile-mini .dropdown-content > *:hover {
+    font-weight: bolder;
+}
+
+.dropdown-header > a {
+  color: rgb(172, 0, 172);
+  font-weight: bold;
 }
 </style>

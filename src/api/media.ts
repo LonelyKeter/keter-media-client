@@ -4,11 +4,13 @@ import auth, { AuthToken } from "./auth";
 import { isMediaKey, MaterialInfo, MaterialKey, MediaInfo, MediaKey, Quality, RegisterMedia, Review, ReviewInfo, UserReview } from '@/model/media';
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserKey } from "@/model/userinfo";
-import { LicenseKey, UserUsage } from "@/model/usage";
+import { LicenseKey, Usage, UserUsage } from "@/model/usage";
 
 export interface Options {
     authorName: string
 }
+
+export type MaterialDownloadToken = string;
 
 class Media {
     async getMedia(options?: Options): Promise<ApiResponse<MediaInfo[], null>>;
@@ -32,25 +34,27 @@ class Media {
             .execute();
     }
 
-    async getMaterials(id: MediaKey): Promise<ApiResponse<MaterialInfo[], null>> {
+    async getMaterials(id: MediaKey, token?: AuthToken): Promise<ApiResponse<MaterialInfo[], null>> {
         return await api.get("/media/" + id + "/materials")
+            .bearerAuth(token)
             .execute();
     }
 
-    async getMaterial(id: MaterialKey): Promise<ApiResponse<MaterialInfo, null>> {
+    async getMaterial(id: MaterialKey, token?: AuthToken): Promise<ApiResponse<MaterialInfo, null>> {
         return await api.get("/media/materials/" + id)
+            .bearerAuth(token)
             .execute();
     }
 
     async useMaterial(id: MaterialKey, token: AuthToken): Promise<ApiResponse<null, null>> {
-        return await api.post("/media/materials/" + id + "?use")
+        return await api.post("/media/materials/" + id + "/usages")
             .bearerAuth(token)
+            .json({})
             .execute();
     }
 
-    async isMaterialUsed(id: MaterialKey, token: AuthToken): Promise<ApiResponse<boolean, null>> {
-        return await api.get("/media/materials/" + id + "?used")
-            .bearerAuth(token)
+    async getMaterialUsageUserId(id: MaterialKey, userId: UserKey): Promise<ApiResponse<Usage, null>> {
+        return await api.get("/media/materials/" + id + "/usages?user_id=" + userId)
             .execute();
     }
 
@@ -59,14 +63,14 @@ class Media {
             .execute();
     }
 
-    async postReview(id: MediaKey, review: Review, token: string): Promise<ApiResponse<null, null>> {
+    async postReview(id: MediaKey, review: Review, token: AuthToken): Promise<ApiResponse<null, null>> {
         return await api.post("/media/" + id + "/reviews")
             .bearerAuth(token)
             .json(review)
             .execute();
     }
 
-    async postMaterial(mediaId: MediaKey, payload: UploadMaterial, authToken: string): Promise<ApiResponse<null, string>> {
+    async postMaterial(mediaId: MediaKey, payload: UploadMaterial, authToken: AuthToken): Promise<ApiResponse<null, string>> {
         const data = new FormData();
 
         data.append("file", payload.file);
@@ -83,7 +87,7 @@ class Media {
                 .execute();
     }
 
-    async deleteMaterial(materialId: MaterialKey, authToken: string): Promise<ApiResponse<null, null>> {
+    async deleteMaterial(materialId: MaterialKey, authToken: AuthToken): Promise<ApiResponse<null, null>> {
         return await api.delete("/media/materials/" + materialId)
             .execute();
     }
@@ -97,10 +101,23 @@ class Media {
         return await api.get("/media/materials/" + materialId + "/usages")
             .execute();
     }
-    /*
-        async regMedia(regMedia: RegisterMedia) : Promise<RegisterMediaResponce> {
-    
-        }*/
+
+    async regMedia(regMedia: RegisterMedia, token: AuthToken) : Promise<ApiResponse<MediaKey, null>> {
+        return await api.post("/media")
+            .bearerAuth(token)
+            .json(regMedia)
+            .execute();
+    }
+
+    async getMaterialDownloadToken(materialId: MaterialKey, authToken: AuthToken) : Promise<ApiResponse<AuthToken, null>> {
+        return await api.get("/media/materials/" + materialId + "/token")
+            .bearerAuth(authToken)
+            .execute();
+    }
+
+    createMaterialDownloadURL(downloadToken: MaterialDownloadToken) : string {
+        return api.host + "/media/materials/download?token=" + downloadToken;
+    }
 }
 
 export type UploadMaterial = {

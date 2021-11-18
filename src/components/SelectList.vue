@@ -42,7 +42,6 @@ export default defineComponent({
   methods: {
     emitUpdateValue(e: Event) {
       this.$emit("update:modelValue", (e.target as HTMLSelectElement).value);
-      console.log((e.target as HTMLSelectElement).value);
     },
   },
 });

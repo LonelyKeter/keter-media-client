@@ -41,6 +41,7 @@ import {
 
 import { defineComponent } from "@vue/runtime-core";
 import SelectList from "@/components/SelectList.vue";
+import { isApiError, Media } from "@/api";
 
 interface Data {
   registering: boolean;
@@ -57,7 +58,7 @@ interface Data {
 
 export default defineComponent({
   components: { SelectList },
-  data() {
+  data(): Data {
     return {
       registering: false,
       title: "",
@@ -69,7 +70,7 @@ export default defineComponent({
       ],
       errors: {},
       tags: [],
-    } as Data;
+    };
   },
   methods: {
     checkInput() {
@@ -96,10 +97,39 @@ export default defineComponent({
       return correct;
     },
     becomeAuthor() {},
-    register() {
+    async register() {
       if (!this.checkInput()) {
         return;
       }
+
+      const token = this.$store.state.user.token;
+
+      if (!token) {
+        alert("Authentication error");
+        this.$router.push({ name: "Login" });
+        return;
+      }
+
+      const regMedia: RegisterMedia = {
+        title: this.title,
+        kind: this.kind as MediaKind,
+        tags: [],
+      };
+
+      const result = await Media.regMedia(regMedia, token);
+
+      if (isApiError(result)) {
+          console.log(result);
+          alert("Something went wrong");
+      } else {
+          alert("Media created successfully");
+          this.$router.push({
+              name: "MediaDetails",
+              params: { id: result }
+          });
+      }
+
+      return;
     },
   },
 });

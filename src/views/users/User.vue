@@ -13,7 +13,16 @@
       <media-item v-for="info in mediaInfos" :key="info.id" :info="info" />
     </table>
     <h1 v-else>No uploaded media</h1>
-    <reg-media v-if="isCurrentUser" />
+    <register-media v-if="isCurrentUser" />
+    <h4>Usages</h4>
+    <table class="small" v-if="usages">
+      <usage-item
+        v-for="item in usages"
+        :key="item.materialId"
+        :usage="item"
+        :download-enabled="$store.getters.isCurrentUser(userInfo.id)"
+      />
+    </table>
   </div>
   <h1 v-else>Couldn't load user info</h1>
 </template>
@@ -24,16 +33,19 @@ import { RouteParams } from "vue-router";
 
 import MediaItem from "@/components/media/MediaItem.vue";
 import UserInfo from "@/components/users/UserInfo.vue";
+import UsageItem from "@/components/UsageItem.vue";
 
 import { MediaInfo } from "@/model/media";
 import { UserInfo as UInfo, UserKey } from "@/model/userinfo";
 
 import { isApiSuccess, Media, Users } from "@/api";
-import RegMedia from "@/components/media/RegisterMedia.vue";
+import { RegisterMedia } from "@/components/media";
+import { Usage } from "@/model/usage";
 
 interface Data {
   userInfo: UInfo | null;
   mediaInfos: MediaInfo[] | null;
+  usages: Usage[] | null;
 }
 
 function extractId(params: RouteParams): string {
@@ -47,12 +59,13 @@ function extractId(params: RouteParams): string {
 }
 
 export default defineComponent({
-  components: { UserInfo, MediaItem, RegMedia },
-  data() {
+  components: { UserInfo, MediaItem, RegisterMedia, UsageItem },
+  data(): Data {
     return {
       userInfo: null,
       mediaInfos: null,
-    } as Data;
+      usages: null,
+    };
   },
   methods: {
     async loadUserInfo(id: UserKey) {
@@ -67,6 +80,13 @@ export default defineComponent({
 
       if (isApiSuccess(result)) {
         this.mediaInfos = result;
+      }
+    },
+    async loadUserUsages(id: UserKey) {
+      const result = await Users.loadUsages(id);
+
+      if (isApiSuccess(result)) {
+        this.usages = result;
       }
     },
   },
@@ -84,6 +104,7 @@ export default defineComponent({
 
     this.loadUserInfo(id);
     this.loadUserMedia(id);
+    this.loadUserUsages(id);
   },
 });
 </script>
