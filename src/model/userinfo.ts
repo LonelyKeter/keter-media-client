@@ -9,8 +9,9 @@ export interface AuthorInfo extends UserInfo {
     country: string
 }
 
+export type AdministrationPermissions = "None" | 'Moderator' | 'Admin';
+
 export interface UserPriveleges {
-    author: boolean;
-    moderator: boolean;
-    admin: boolean;
+    isAuthor: boolean;
+    administrationPrivelegies: AdministrationPermissions
 }

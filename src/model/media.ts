@@ -1,4 +1,5 @@
 import { AuthorInfo, UserInfo } from "@/model/userinfo";
+import { RangeFilter } from ".";
 
 export type MediaKey = number;
 export const toMediaKey = (val: any) => Number(val);
@@ -29,7 +30,22 @@ export interface MediaInfo {
 export type MaterialKey = number;
 export const toMaterialKey = (val: any) => Number(val);
 export const isMaterialKey = (val: any) => typeof val === 'number'; 
-export type Quality = "Very low" | "Low" | "Medium" | "High" | "Very high";
+
+export enum Quality {
+    VeryLow = "Very low",
+    Low = "Low",
+    Medium = "Medium",
+    High = "High",
+    VeryHigh = "Very high"
+}
+
+export interface MediaFilterOptions {
+    title?: string,
+    kinds?: MediaKind[],
+    popularity?: RangeFilter,
+    timesUsed?: RangeFilter
+}
+
 export type MaterialSize = number;
 
 export interface MaterialInfo {

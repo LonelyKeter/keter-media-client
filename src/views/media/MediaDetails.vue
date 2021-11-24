@@ -188,10 +188,8 @@ div.media-details > div {
 table.materials {
   margin: 2%;
 
-  border-color: var(--green1);
-  border-width: 2px;
-  border-style: solid;
-  border-radius: 10px;
+  border-collapse: separate;
+  border-spacing: 0 5pt;
 
   min-width: 75%;
 }

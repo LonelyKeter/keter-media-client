@@ -1,6 +1,4 @@
 import Api, { ApiResponse } from "@/api"
-import { UserInfo, UserPriveleges} from "@/model/userinfo";
-import { AxiosResponse } from "axios";
 
 export type AuthToken = string;
 

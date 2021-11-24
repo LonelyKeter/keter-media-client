@@ -1,5 +1,5 @@
 <template>
-  <tr class="media-item">
+  <tr class="media-item row1">
     <td>
       <router-link
         tag="li"

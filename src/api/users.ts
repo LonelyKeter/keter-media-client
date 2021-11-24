@@ -14,7 +14,7 @@ class Users {
             .execute();
     }
 
-    async loadSelfPrivelegies(authToken: string) : Promise<ApiResponse<UserPriveleges, null>> { 
+    async loadSelfPriveleges(authToken: string) : Promise<ApiResponse<UserPriveleges, null>> { 
         return await api.get('/users/self/priveleges')
             .bearerAuth(authToken)
             .execute();

@@ -1,6 +1,6 @@
 <template>
   <div class="register-media">
-    <button v-if="!$store.state.user.privelegies?.author" @click="becomeAuthor">
+    <button v-if="!$store.state.user.privelegies?.isAuthor" @click="becomeAuthor">
       Become author
     </button>
     <div v-else>

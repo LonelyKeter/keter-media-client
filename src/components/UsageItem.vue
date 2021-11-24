@@ -1,5 +1,5 @@
 <template>
-  <tr>
+  <tr class="row-1">
     <td v-if="userInfo">
       <router-link :to="{ name: 'User', params: { id: userInfo.id } }">
         {{ userInfo.name }}

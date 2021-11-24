@@ -1,8 +1,8 @@
 <template>
-  <tr class="material-item">
+  <tr class="material-item row-1">
     <td>{{ info.format }}</td>
     <td>{{ info.quality }}</td>
-    <td>{{ info.use_count }} times</td>
+    <td>{{ info.use_count }} time(s)</td>
     <td>
       <div v-if="info.rating">{{ info.rating }}</div>
       <div v-else>Unrated</div>

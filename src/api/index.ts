@@ -120,33 +120,52 @@ abstract class ApiRequest {
 
         try {
             const responce: AxiosResponse<T> = await axios.request(config);
-            console.log({
-                path: this.path,
-                data: responce.data
-            });
+
+            if (process.env?.NODE_ENV === "development") {
+                this.logExecution(responce.status, responce.data)
+            }
 
             return responce.data as NonUndefined<T>;
         } catch (error) {
             const err = error as AxiosError<ApiError<E>>;
             //TODO: Proper typechecks for api repsonce
             const responce = err.response;
-            
-            if (responce) {
-                const data = responce.data;
-                if (data && "error" in data) {
+            const data = responce?.data;
+
+            if (data) {
+                if ("error" in data) {
                     data.errorKind = "General error responce"
                 }
+
                 console.log({
                     path: this.path,
-                    data: responce.data
-                });                    
-
-                return data;
+                    data: data
+                });
             } else {
                 console.log("No error data recieved");
-                return undefined;
             }
+
+            if (process.env?.NODE_ENV === "development") {
+                this.logExecution(responce?.status, data);
+            }
+
+            return data;
         }
+    }
+
+    logExecution(status?: number, data?: any) {
+        console.log({
+            path: this.path,
+            request: {
+                method: this._method,
+                headers: this.headers,
+                data: this.body
+            },
+            responce: {
+                status: status,
+                data: data
+            }
+        });
     }
 }
 
@@ -208,5 +227,6 @@ import Media from "./media";
 import Auth, { AuthToken } from "./auth";
 import Licenses from "./licenses";
 import Users from "./users";
+import { getTransitionRawChildren } from '@vue/runtime-core';
 
 export { Media, Auth, Licenses, Users };
