@@ -35,12 +35,14 @@ import { FilterOrdering } from "@/model";
 import { defineComponent, PropType } from "@vue/runtime-core";
 
 interface Data {
-    minRaw: string,
-    maxRaw: string
+  minRaw: string;
+  maxRaw: string;
 }
 
-const minUndefined = (a?: number, b?: number) => !a ? b : !b ? a : Math.min(a, b); 
-const maxUndefined = (a?: number, b?: number) => !a ? b : !b ? a : Math.max(a, b); 
+const minUndefined = (a?: number, b?: number) =>
+  !a ? b : !b ? a : Math.min(a, b);
+const maxUndefined = (a?: number, b?: number) =>
+  !a ? b : !b ? a : Math.max(a, b);
 
 export default defineComponent({
   props: {
@@ -52,15 +54,15 @@ export default defineComponent({
       type: Number,
       required: false,
     },
-    min: { 
-        type: Number as PropType<Number | null>, 
-        required: false,
-        default: null
+    min: {
+      type: Number as PropType<Number | null>,
+      required: false,
+      default: null,
     },
-    max: { 
-        type: Number as PropType<Number | null>, 
-        required: false,
-        default: null
+    max: {
+      type: Number as PropType<Number | null>,
+      required: false,
+      default: null,
     },
     header: {
       type: String,
@@ -76,42 +78,40 @@ export default defineComponent({
     },
   },
   data(props): Data {
-      return {
-          minRaw: String(props.min ?? ""),
-          maxRaw: String(props.max ?? ""),
-      }
+    return {
+      minRaw: String(props.min ?? ""),
+      maxRaw: String(props.max ?? ""),
+    };
   },
   computed: {
-      minBinding(): number | undefined {
-          return !!this.min ? Number(this.min) : undefined;
-      },
-      maxBinding(): number | undefined {
-          return !!this.max ? Number(this.max) : undefined;
-      },
-      
+    minBinding(): number | undefined {
+      return !!this.min ? Number(this.min) : undefined;
+    },
+    maxBinding(): number | undefined {
+      return !!this.max ? Number(this.max) : undefined;
+    },
+
     pickMinBound(): number | undefined {
-        const min = this.minRaw === "" ? undefined : Number(this.minRaw);        
-        return maxUndefined(min, this.minBound);
+      const min = this.minRaw === "" ? undefined : Number(this.minRaw);
+      return maxUndefined(min, this.minBound);
     },
     pickMaxBound(): number | undefined {
-        const max = this.maxRaw === "" ? undefined : Number(this.maxRaw);
-        return minUndefined(max, this.maxBound);
-    }
+      const max = this.maxRaw === "" ? undefined : Number(this.maxRaw);
+      return minUndefined(max, this.maxBound);
+    },
   },
   methods: {
     updateMin(e: Event) {
-        const min: string = (e.target as HTMLInputElement).value;
-        this.minRaw = min;
-        const update = min === "" ? null : Number(min);
-        console.log(this.pickMinBound)
-        this.$emit("update:min", update);
+      const min: string = (e.target as HTMLInputElement).value;
+      this.minRaw = min;
+      const update = min === "" ? null : Number(min);
+      this.$emit("update:min", update);
     },
     updateMax(e: Event) {
-        const max: string = (e.target as HTMLInputElement).value;
-        this.maxRaw = max;
-        const update = max === "" ? null : Number(max);        
-        console.log(this.pickMaxBound)
-        this.$emit("update:max", update);
+      const max: string = (e.target as HTMLInputElement).value;
+      this.maxRaw = max;
+      const update = max === "" ? null : Number(max);
+      this.$emit("update:max", update);
     },
   },
 });

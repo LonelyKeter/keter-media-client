@@ -47,6 +47,7 @@ import SearchBar from "../SearchBar.vue";
 
 import { FilterOrdering, Limits } from "@/model";
 import FilterOrder from "../FilterOrder.vue";
+import { Options } from "@/api/media";
 
 interface Data {
   filtersEnabled: boolean;
@@ -86,10 +87,23 @@ export default defineComponent({
       console.log(this.kinds);
     },
     submit() {
+        const options: Options = {
+            title: this.title
+        };
+
+        if (this.filtersEnabled) {
+            options.kinds = this.kinds;
+            options.min_rating = this.rating.min ?? undefined;
+            options.max_rating = this.rating.max ?? undefined;
+            options.min_use_count = this.timesUsed.min ?? undefined;
+            options.max_use_count = this.timesUsed.min ?? undefined;
+        }
+
+        this.$emit('submit', { options });
     },
   },
   emits: {
-    submit(payload: { options: MediaFilterOptions }) {
+    submit(payload: { options: Options }) {
       return !!payload;
     },
   },

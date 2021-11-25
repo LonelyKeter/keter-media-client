@@ -1,6 +1,6 @@
 <template>
   <div>
-    <media-search-bar />
+    <media-search-bar @submit="loadMedia($event.options)"/>
     <colgroup>
       <col width="auto" />
       <col width="auto" />
@@ -11,7 +11,7 @@
     <table class="wide">
       <media-item
         v-for="info in mediaInfos"
-        :key="Number(info.id)"
+        :key="info.id"
         :info="info"
       />
     </table>
@@ -26,6 +26,7 @@ import { MediaItem, MediaSearchBar } from "@/components/media";
 import { Media, isApiSuccess } from "@/api";
 
 import { MediaInfo } from "@/model/media";
+import { Options } from "@/api/media";
 
 export default defineComponent({
   components: {
@@ -38,8 +39,8 @@ export default defineComponent({
     };
   },
   methods: {
-    async loadMedia() {
-      const result = await Media.getMedia();
+    async loadMedia(options?: Options) {
+      const result = await Media.getMedia(options);
 
       if (isApiSuccess(result)) {
         this.mediaInfos = result;

@@ -1,13 +1,21 @@
 import api, { ApiResponse, ApiError } from ".";
 import auth, { AuthToken } from "./auth";
 
-import { isMediaKey, MaterialInfo, MaterialKey, MediaInfo, MediaKey, Quality, RegisterMedia, Review, ReviewInfo, UserReview } from '@/model/media';
+import { isMediaKey, MaterialInfo, MaterialKey, MediaInfo, MediaKey, MediaKind, Quality, RegisterMedia, Review, ReviewInfo, UserReview } from '@/model/media';
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserKey } from "@/model/userinfo";
 import { LicenseKey, Usage, UserUsage } from "@/model/usage";
+import { FilterOrdering } from "@/model";
 
 export interface Options {
-    authorName: string
+    title?: string,
+    kinds?: MediaKind[],
+    min_rating?: number,
+    max_rating?: number,
+    min_use_count?: number,
+    max_use_count?: number,
+    rating_ordering?: FilterOrdering,
+    use_count_ordering?: FilterOrdering,
 }
 
 export type MaterialDownloadToken = string;
@@ -16,8 +24,6 @@ class Media {
     async getMedia(options?: Options): Promise<ApiResponse<MediaInfo[], null>>;
     async getMedia(id: MediaKey): Promise<ApiResponse<MediaInfo, null>>;
     async getMedia(options?: MediaKey | Options) {
-        let path: string;
-
         if (!options) {
             return await api.get("/media")
                 .execute<MediaInfo[], null>();
@@ -25,7 +31,9 @@ class Media {
             return await api.get("/media/" + options)
                 .execute<MediaInfo, null>();
         } else {
-            throw "Unimplimented media request";
+            return await api.get("/media")
+                .setParams(options)
+                .execute<MediaInfo[], null>()
         }
     }
 
