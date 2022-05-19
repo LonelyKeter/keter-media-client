@@ -23,9 +23,10 @@
         @input="updateMax($event)"
       />
     </div>
-    <select>
-      <option value="desc">Descending</option>
-      <option value="asc">Ascending</option>
+    <select v-model="orderingComputed">
+      <option value="">--</option>
+      <option :value="ascValue">Ascending</option>
+      <option :value="descValue">Descending</option>
     </select>
   </div>
 </template>
@@ -37,7 +38,12 @@ import { defineComponent, PropType } from "@vue/runtime-core";
 interface Data {
   minRaw: string;
   maxRaw: string;
+  ascValue: FilterOrdering;
+  descValue: FilterOrdering;
+  orderingValue: FilterOrdering | "";
 }
+
+const unorderedOptionValue = "none";
 
 const minUndefined = (a?: number, b?: number) =>
   !a ? b : !b ? a : Math.min(a, b);
@@ -68,6 +74,11 @@ export default defineComponent({
       type: String,
       required: false,
     },
+    ordering: {
+      type: String as PropType<FilterOrdering | null>,
+      required: false,
+      default: null,
+    },
   },
   emits: {
     "update:min"(payload: number | null) {
@@ -76,11 +87,17 @@ export default defineComponent({
     "update:max"(payload: number | null) {
       return true;
     },
+    "update:ordering"(payload: FilterOrdering | null) {
+      return true;
+    },
   },
   data(props): Data {
     return {
       minRaw: String(props.min ?? ""),
       maxRaw: String(props.max ?? ""),
+      ascValue: FilterOrdering.Ascending,
+      descValue: FilterOrdering.Descending,
+      orderingValue: props.ordering ?? "",
     };
   },
   computed: {
@@ -98,6 +115,17 @@ export default defineComponent({
     pickMaxBound(): number | undefined {
       const max = this.maxRaw === "" ? undefined : Number(this.maxRaw);
       return minUndefined(max, this.maxBound);
+    },
+    orderingComputed: {
+      get(): string {
+        return this.orderingValue;
+      },
+      set(newVal: string) {
+        this.orderingValue = newVal as FilterOrdering | "";
+        const updated = newVal === "" ? null : (newVal as FilterOrdering);
+        console.log(updated);
+        this.$emit("update:ordering", updated);
+      },
     },
   },
   methods: {

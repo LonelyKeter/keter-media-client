@@ -3,6 +3,7 @@
     <div id="bar">
       <div id="nav">
         <router-link to="/media">Media</router-link> |
+        <router-link to="/authors">Authors</router-link> | 
         <router-link to="/licenses">Licenses</router-link>
       </div>
       <div id="corner">

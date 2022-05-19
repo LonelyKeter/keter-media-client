@@ -38,8 +38,8 @@ export default defineComponent({
         this.$store.commit(UserMutationTypes.SET_AUTH_TOKEN, token);
 
         //TODO: await all
-        const info = await Users.loadSelf(token);
-        const priveleges = await Users.loadSelfPriveleges(token);
+        const info = await Users.getSelf(token);
+        const priveleges = await Users.getSelfPriveleges(token);
 
         if (isApiSuccess(info)) {
           this.$store.commit(UserMutationTypes.SET_USER_INFO, info);

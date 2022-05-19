@@ -2,11 +2,10 @@
   <div class="search-bar">
     <input
       type="text"
-      :value="modelValue"
+      v-model="searchText"
       :placeholder="placeholder"
-      @change="emitUpdateValue"
     />
-    <button @click="$emit('submit')">
+    <button @click="$emit('submit', searchText)">
       Search
     </button>
   </div>
@@ -27,15 +26,20 @@ export default defineComponent({
     "update:modelValue"(payload: string) {
       return true;
     },
-    submit() {
+    submit(searchText: string) {
       return true;
     },
   },
-  methods: {
-    emitUpdateValue(e: Event) {
-      this.$emit("update:modelValue", (e.target as HTMLInputElement).value);
-    },
-  },
+  computed: {
+      searchText: {
+          get(): string {
+              return this.modelValue;
+          },
+          set(newVal: string) {
+            this.$emit("update:modelValue", newVal);              
+          }
+      }
+  }
 });
 </script>
 

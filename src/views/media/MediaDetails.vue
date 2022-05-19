@@ -10,13 +10,7 @@
         <col width="auto" />
         <col width="auto" />
       </colgroup>
-      <tr class="materials-header">
-        <th>Extension</th>
-        <th>Quality</th>
-        <th>Used</th>
-        <th>Rating</th>
-        <th>License</th>
-      </tr>
+      <material-table-header/>
       <material-item v-for="info in materials" :key="info.id" :info="info" />
     </table>
     <div v-else>
@@ -61,7 +55,7 @@ import {
 import { defineComponent } from "@vue/runtime-core";
 import { RouteParams } from "vue-router";
 
-import { MaterialItem, AddMaterial, MediaHeader } from "@/components/media";
+import { MaterialItem, AddMaterial, MediaHeader, MaterialTableHeader } from "@/components/media";
 import { PostReview, Review } from "@/components/reviews";
 
 import { Media, isApiSuccess } from "@/api";
@@ -93,6 +87,7 @@ export default defineComponent({
     MediaHeader,
     AddMaterial,
     UsageItem,
+    MaterialTableHeader,
   },
   data(): Data {
     return {

@@ -1,7 +1,7 @@
 import api, { ApiResponse, ApiError } from ".";
 import auth, { AuthToken } from "./auth";
 
-import { isMediaKey, MaterialInfo, MaterialKey, MediaInfo, MediaKey, MediaKind, Quality, RegisterMedia, Review, ReviewInfo, UserReview } from '@/model/media';
+import { isMediaKey, MaterialInfo, MaterialKey, MediaInfo, MediaKey, MediaKind, Quality, RegisterMedia, Review, ReviewInfo, UserRating, UserReview } from '@/model/media';
 import axios, { AxiosError, AxiosResponse } from "axios";
 import { UserKey } from "@/model/userinfo";
 import { LicenseKey, Usage, UserUsage } from "@/model/usage";
@@ -76,6 +76,13 @@ class Media {
             .bearerAuth(token)
             .json(review)
             .execute();
+    }
+
+    async putMeterialRating(id: MaterialKey, rating: UserRating, token: AuthToken): Promise<ApiResponse<null, null>> {
+        return await api.put("/media/materials/" + id + "/rating")
+            .bearerAuth(token)
+            .json(rating)
+            .execute()
     }
 
     async postMaterial(mediaId: MediaKey, payload: UploadMaterial, authToken: AuthToken): Promise<ApiResponse<null, string>> {

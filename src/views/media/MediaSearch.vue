@@ -1,19 +1,16 @@
 <template>
   <div>
-    <media-search-bar @submit="loadMedia($event.options)"/>
+    <media-search-bar @submit="loadMedia($event.options)" />
     <colgroup>
       <col width="auto" />
       <col width="auto" />
-      <col width="5%" />
+      <col width="10%" />
       <col width="10%" />
       <col width="10%" />
     </colgroup>
     <table class="wide">
-      <media-item
-        v-for="info in mediaInfos"
-        :key="info.id"
-        :info="info"
-      />
+      <media-table-header />
+      <media-table-row v-for="info in mediaInfos" :key="info.id" :info="info" />
     </table>
   </div>
 </template>
@@ -21,7 +18,11 @@
 <script lang="ts">
 import { defineComponent } from "vue";
 
-import { MediaItem, MediaSearchBar } from "@/components/media";
+import {
+  MediaTableRow,
+  MediaSearchBar,
+  MediaTableHeader,
+} from "@/components/media";
 
 import { Media, isApiSuccess } from "@/api";
 
@@ -30,8 +31,9 @@ import { Options } from "@/api/media";
 
 export default defineComponent({
   components: {
+    MediaTableHeader,
     MediaSearchBar,
-    MediaItem,
+    MediaTableRow,
   },
   data() {
     return {

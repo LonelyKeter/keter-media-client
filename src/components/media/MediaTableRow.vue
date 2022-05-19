@@ -18,13 +18,13 @@
       </router-link>
     </td>
     <td>
-      <p class="author-country">{{ info.author.country }}</p>
-    </td>
-    <td>
       <p class="media-kind">{{ info.kind }}</p>
     </td>
     <td>
-      <p class="media-rating">{{ info.rating }}</p>
+      <p class="media-rating">{{ roundedRating }}</p>
+    </td>
+    <td>
+      <p>{{ info.useCount }} time(s)</p>
     </td>
   </tr>
 </template>
@@ -49,9 +49,9 @@ export default defineComponent({
 
   setup() {},
 
-  computed: {
+  computed: {      
       roundedRating(): string {
-          return this.info.rating?.toPrecision(4) ?? "";
+          return this.info.rating?.toPrecision(4) ?? "n/a";
       }
   }
 });

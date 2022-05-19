@@ -10,7 +10,7 @@
         <col width="10%" />
         <col width="10%" />
       </colgroup>
-      <media-item v-for="info in mediaInfos" :key="info.id" :info="info" />
+      <media-table-row v-for="info in mediaInfos" :key="info.id" :info="info" />
     </table>
     <h1 v-else>No uploaded media</h1>
     <register-media v-if="isCurrentUser" />
@@ -21,6 +21,7 @@
         :key="item.materialId"
         :usage="item"
         :download-enabled="$store.getters.isCurrentUser(userInfo.id)"
+        :rating-enabled="$store.getters.isCurrentUser(userInfo.id)"
       />
     </table>
   </div>
@@ -31,9 +32,9 @@
 import { defineComponent } from "@vue/runtime-core";
 import { RouteParams } from "vue-router";
 
-import MediaItem from "@/components/media/MediaItem.vue";
-import UserInfo from "@/components/users/UserInfo.vue";
-import UsageItem from "@/components/UsageItem.vue";
+import { MediaTableRow } from "@/components/media";
+import { UserInfo } from "@/components/users";
+import { UsageItem } from "@/components";
 
 import { MediaInfo } from "@/model/media";
 import { UserInfo as UInfo, UserKey } from "@/model/userinfo";
@@ -59,7 +60,7 @@ function extractId(params: RouteParams): string {
 }
 
 export default defineComponent({
-  components: { UserInfo, MediaItem, RegisterMedia, UsageItem },
+  components: { UserInfo, MediaTableRow, RegisterMedia, UsageItem },
   data(): Data {
     return {
       userInfo: null,
@@ -83,7 +84,7 @@ export default defineComponent({
       }
     },
     async loadUserUsages(id: UserKey) {
-      const result = await Users.loadUsages(id);
+      const result = await Users.getUsages(id);
 
       if (isApiSuccess(result)) {
         this.usages = result;

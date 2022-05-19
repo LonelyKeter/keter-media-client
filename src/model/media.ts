@@ -22,9 +22,9 @@ export interface MediaInfo {
     id: MediaKey,
     title: string,
     kind: MediaKind,
-    author: AuthorInfo,
+    author: UserInfo,
     rating?: Rating,
-    use_count: Count
+    useCount: Count
 }
 
 export type MaterialKey = number;
@@ -55,7 +55,7 @@ export interface MaterialInfo {
     quality: Quality,
     licenseName: string,
     rating?: Rating,
-    use_count: Count,
+    useCount: Count,
     isUsed: boolean | null
 }
 
@@ -81,6 +81,10 @@ export type RegisterMedia = {
     tags: string[],
     defaultLicense?: string
 };
+
+export type UserRating = {
+    rating: number
+}
 
 export type RegisterMediaResponce = {
     success: boolean

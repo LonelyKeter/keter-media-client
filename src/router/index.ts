@@ -32,8 +32,7 @@ const routes : RouteRecordRaw[] = [{
   path: '/authors',
   name: 'AuthorSearch',
   component: () =>
-    import('../views/AuthorSearch.vue'),
-  redirect: "/"
+    import('../views/users/AuthorSearch.vue'),
 },
 {
   path: '/user/:id',

@@ -1,12 +1,19 @@
+import { Rating } from "./media";
+
 export type UserKey = number;
 
-export interface UserInfo {
+export type UserInfo = {
     id: UserKey;
     name: string;
 }
 
-export interface AuthorInfo extends UserInfo {
-    country: string
+export interface AuthorContacts {
+    email: string
+}
+
+export type AuthorInfo = UserInfo & {
+    contacts: AuthorContacts,
+    rating?: Rating
 }
 
 export type AdministrationPermissions = "None" | 'Moderator' | 'Admin';

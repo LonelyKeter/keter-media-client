@@ -2,8 +2,8 @@
   <div>
     <div class="horizontal-flex">
       <search-bar
-        :placeholder="'Enter title...'"
-        v-model="title"
+        :placeholder="'Enter name...'"
+        v-model="name"
         @submit="submit()"
       />
       <button class="secondary1" @click="filtersEnabled = !filtersEnabled">
@@ -29,15 +29,6 @@
         <input ref="image" type="checkbox" @change="togleKind('Image')" />
         <label for="image">Image</label>
       </div>
-
-      <filter-order
-        class="vertical-flex"
-        :min-bound="0"
-        :header="'Times used: '"
-        v-model:min="timesUsed.min"
-        v-model:max="timesUsed.max"
-        v-model:ordering="use_count_ordering"
-      />
     </div>
   </div>
 </template>
@@ -49,16 +40,14 @@ import SearchBar from "../SearchBar.vue";
 
 import { FilterOrdering, Limits } from "@/model";
 import FilterOrder from "../FilterOrder.vue";
-import { Options } from "@/api/media";
+import { AuthorsOptions } from "@/api/users";
 
 interface Data {
   filtersEnabled: boolean;
   kinds: MediaKind[];
-  title: string;
+  nameValue: string | null;
   rating: Limits;
-  timesUsed: Limits;
   rating_ordering: FilterOrdering | null;
-  use_count_ordering: FilterOrdering | null;
 }
 
 export default defineComponent({
@@ -67,19 +56,14 @@ export default defineComponent({
     return {
       filtersEnabled: false,
 
-      title: "",
+      nameValue: null,
       kinds: [],
 
       rating: {
         min: null,
         max: null,
       },
-      timesUsed: {
-        min: null,
-        max: null,
-      },
       rating_ordering: null,
-      use_count_ordering: null,
     };
   },
   methods: {
@@ -93,8 +77,8 @@ export default defineComponent({
       console.log(this.kinds);
     },
     submit() {
-        const options: Options = {
-            title: this.title === "" ? undefined : this.title
+        const options: AuthorsOptions = {
+            name: this.nameValue ?? undefined
         };
 
         if (this.filtersEnabled) {
@@ -103,10 +87,6 @@ export default defineComponent({
             options.min_rating = this.rating.min ?? undefined;
             options.max_rating = this.rating.max ?? undefined;
             options.rating_ordering = this.rating_ordering ?? undefined;
-
-            options.min_use_count = this.timesUsed.min ?? undefined;
-            options.max_use_count = this.timesUsed.max ?? undefined;
-            options.use_count_ordering = this.use_count_ordering ?? undefined;
         }
 
         console.log(options);
@@ -114,11 +94,20 @@ export default defineComponent({
     },
   },
   emits: {
-    submit(payload: { options: Options }) {
+    submit(payload: { options: AuthorsOptions }) {
       return !!payload;
     },
   },
-  computed: {},
+  computed: {
+      name: {
+          get(): string {
+              return this.nameValue ?? "";
+          },
+          set(newVal: string) {
+              this.nameValue = newVal !== "" ? newVal : null;
+          }
+      }
+  },
 });
 </script>
 
